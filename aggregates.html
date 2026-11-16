@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Team Vision Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  /* ============================================================
+     EDIT THESE PER CLIENT
+     ============================================================ */
+  var COMPANY_NAME  = "ABC Sand & Rock";         // e.g. "ABC Sand & Rock"
+  var PRESENTER     = "[Your Business Name]";     // your consulting business name
+  var QUOTE_EMAIL   = "jayco.operations@outlook.com";     // where "Request my custom quote" emails go (or ?email=)
+  var FORM_ENDPOINT = "https://formsubmit.co/ajax/c7709bf6914b1ad29c1b7214dda07275";                         // optional: URL that accepts a JSON POST; leave "" to use email
+  /* Tip: you can also override without editing, via the URL:
+     aggregates-vision-board.html?company=ABC%20Sand%20%26%20Rock&email=quotes%40example.com */
+</script>
+<style>
+  :root{
+    --bg:#f7f3ec; --paper:#fffdf9; --ink:#2a2622; --muted:#6b625a;
+    --forest:#3e4a52; --leaf:#b5643a; --sage:#d6bf9f; --moss:#f0e6d6;
+    --earth:#8a6a48; --sand:#ecdfc9; --clay:#d08a3c; --sky:#5b8fa8;
+    --line:#e6dccd; --shadow:0 1px 2px rgba(31,42,34,.06),0 8px 24px rgba(31,42,34,.08);
+    --radius:16px;
+    --serif:"Fraunces",Georgia,"Times New Roman",serif;
+    --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;overflow-x:hidden;font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+
+  /* Hero */
+  .hero{position:relative;overflow:hidden;background:linear-gradient(160deg,#2c353c 0%,#45494c 45%,#8a5a3c 100%);color:#f4f1e6;padding:64px 24px 96px}
+  .hero svg.hills{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:120px;display:block}
+  .hero-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);padding:6px 12px;border-radius:999px}
+  h1{font-family:var(--serif);font-weight:700;font-size:clamp(32px,5vw,56px);line-height:1.08;margin:18px 0 14px;max-width:900px}
+  h1 .co{color:#f3d9a4}
+  .lede{font-size:clamp(16px,1.8vw,19px);max-width:720px;color:#efe4d4;margin:0 0 26px}
+  .hero-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .hint{font-size:14px;color:#e6d8c4}
+  .sun{position:absolute;right:8%;top:40px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,#f3d9a4 0%,rgba(243,217,164,.35) 55%,transparent 70%);opacity:.7;pointer-events:none}
+
+  /* Layout */
+  main{max-width:1100px;margin:-48px auto 0;padding:0 24px 40px;position:relative;z-index:2}
+  .sample-note{display:flex;gap:8px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:13.5px;color:var(--muted);box-shadow:var(--shadow);margin-bottom:28px}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px}
+  .chip{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:7px 14px;border-radius:999px;cursor:pointer;transition:all .2s}
+  .chip:hover{border-color:var(--sage)}
+  .chip[aria-pressed="true"]{background:var(--forest);color:#fff;border-color:var(--forest)}
+  .chip-own{border:2px dashed var(--sage);background:#fbfaf3;font-weight:600}
+  .chip-own:hover{border-color:var(--leaf);background:#fbf1e6}
+  .chip:focus-visible{outline:3px solid var(--clay);outline-offset:2px}
+  section.cat{margin-top:34px}
+  .cat-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .cat-head h2{font-family:var(--serif);font-size:26px;margin:0;color:var(--forest)}
+  .cat-head p{margin:0;color:var(--muted);font-size:15px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+  .card{position:relative;text-align:left;font:inherit;color:inherit;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px 18px 16px;cursor:pointer;box-shadow:0 1px 2px rgba(31,42,34,.05);transition:transform .25s ease,box-shadow .25s ease,border-color .25s;display:flex;flex-direction:column;gap:8px;min-height:190px;opacity:0;transform:translateY(10px);animation:rise .5s ease forwards}
+  .card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--sage)}
+  .card:focus-visible{outline:3px solid var(--clay);outline-offset:3px}
+  .card .ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:24px;background:var(--moss)}
+  .card h3{margin:4px 0 0;font-size:17px;line-height:1.25}
+  .card p{margin:0;color:var(--muted);font-size:14.5px;flex:1}
+  .card .foot{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:6px}
+  .tag{font-size:12px;background:var(--sand);color:#5e4630;padding:4px 10px;border-radius:10px;line-height:1.35;max-width:100%}
+  .open{font-size:13px;color:var(--leaf);font-weight:600;white-space:nowrap}
+  .card:hover .open{text-decoration:underline}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .est-note{font-size:12.5px;color:var(--muted);margin-top:28px}
+
+  /* Footer */
+  footer{border-top:1px solid var(--line);margin-top:40px;padding:28px 24px 40px;text-align:center;color:var(--muted);font-size:14px}
+  footer strong{color:var(--forest);font-family:var(--serif);font-size:18px;display:block;margin-bottom:4px}
+
+  /* Modal */
+  .backdrop{position:fixed;inset:0;background:rgba(28,26,24,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:50}
+  .backdrop.show{opacity:1;pointer-events:auto}
+  .modal{background:var(--paper);border-radius:20px;width:min(920px,100%);max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px);overflow:auto;-webkit-overflow-scrolling:touch;box-shadow:0 30px 80px rgba(0,0,0,.3);transform:translateY(16px) scale(.98);transition:transform .3s ease}
+  .backdrop.show .modal{transform:none}
+  .m-head{position:sticky;top:0;background:var(--paper);display:flex;gap:14px;align-items:center;padding:20px 24px;border-bottom:1px solid var(--line);z-index:1}
+  .m-head .ic{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:26px;background:var(--moss);flex:none}
+  .m-head h2{margin:0;font-family:var(--serif);font-size:22px;line-height:1.2}
+  .m-head .sub{margin:2px 0 0;color:var(--muted);font-size:14px}
+  .close{margin-left:auto;flex:none;font:inherit;font-size:24px;line-height:1;width:44px;height:44px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;position:relative;z-index:2;border-radius:50%;border:1px solid var(--line);background:#fff;cursor:pointer;color:var(--ink)}
+  .close:hover{background:var(--moss)}
+  .close:focus-visible{outline:3px solid var(--clay);outline-offset:2px}
+  .m-body{display:grid;grid-template-columns:1.6fr 1fr;gap:22px;padding:22px 24px 26px}
+  @media (max-width:760px){.m-body{grid-template-columns:1fr}}
+  .label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px;font-weight:600}
+  .doc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;font-size:14.5px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .doc h4{margin:0 0 6px;font-size:16px}
+  .doc p{margin:0 0 10px}
+  .doc .meta{font-size:13px;color:var(--muted);border-bottom:1px dashed var(--line);padding-bottom:10px;margin-bottom:12px}
+  .doc .meta div{margin:2px 0}
+  .doc .meta b{color:var(--ink);font-weight:600;display:inline-block;min-width:62px}
+  .doc ul,.doc ol{margin:0 0 10px;padding-left:20px}
+  .doc li{margin:3px 0}
+  .doc table{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0 10px}
+  .doc th,.doc td{text-align:left;padding:7px 8px;border-bottom:1px solid #eee8db}
+  .doc th{background:#f4f1e8;font-weight:600}
+  .doc td.n,.doc th.n{text-align:right;font-variant-numeric:tabular-nums}
+  .doc tr.total td{font-weight:700;border-top:2px solid var(--line)}
+  .pill{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;background:var(--moss);color:var(--forest);font-weight:600}
+  .pill.warn{background:#fbe6d6;color:#9a4b22}
+  .pill.blue{background:#dcebf2;color:#2f6680}
+  .callout{background:#fbf4e4;border-left:4px solid var(--clay);padding:10px 12px;border-radius:8px;margin:8px 0 12px;font-size:14px}
+  .callout.green{background:#f3ece2;border-left-color:var(--leaf)}
+  .draft-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#9a4b22;background:#fbe6d6;padding:3px 10px;border-radius:999px;margin-bottom:10px}
+  .bar{height:8px;border-radius:99px;background:#eee8db;overflow:hidden}
+  .bar>span{display:block;height:100%;background:var(--leaf);border-radius:99px}
+  .bar.over>span{background:var(--clay)}
+  .slides{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .slide{aspect-ratio:16/9;border-radius:10px;padding:10px 12px;font-size:12px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--line);background:linear-gradient(150deg,#fff,#f3f0e6)}
+  .slide.dark{background:linear-gradient(150deg,#3e4a52,#7a5640);color:#f4f1e6;border:0}
+  .slide b{font-size:13px}
+  .slide small{opacity:.75}
+  .side ul{margin:0 0 16px;padding-left:18px;font-size:14.5px}
+  .side li{margin:6px 0}
+  .control{display:flex;gap:10px;align-items:flex-start;background:#f3ece2;border:1px solid #e3d3bd;border-radius:12px;padding:12px 14px;font-size:14px;color:#4a3424}
+  .control .ck{font-size:18px;line-height:1.2}
+  .side .tag{display:inline-block;margin-bottom:14px}
+  .m-foot{padding:0 24px 20px;color:var(--muted);font-size:12.5px}
+  .nav-row{display:flex;justify-content:space-between;gap:10px;padding:0 24px 22px}
+  .nav-row button{font:inherit;font-size:14px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;cursor:pointer;color:var(--ink)}
+  .nav-row button:hover{background:var(--moss)}
+  .nav-row button:focus-visible{outline:3px solid var(--clay);outline-offset:2px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  @media print{.backdrop{display:none}.card{opacity:1;transform:none;animation:none}}
+  /* v2 additions */
+  .stats{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 22px}
+  .stat{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:8px 14px;font-size:14px;color:#f3e9da}
+  .stat b{font-family:var(--serif);font-size:22px;color:#f3d9a4;margin-right:6px}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 12px}
+  .search{flex:1 1 280px;position:relative}
+  .search input{width:100%;font:inherit;font-size:15px;padding:11px 14px 11px 40px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);transition:border-color .2s,box-shadow .2s}
+  .search input:focus{outline:none;border-color:var(--leaf);box-shadow:0 0 0 3px rgba(181,100,58,.2)}
+  .search .mag{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.6;pointer-events:none}
+  .count{font-size:14px;color:var(--muted);white-space:nowrap}
+  .count b{color:var(--forest)}
+  .tbtn{font:inherit;font-size:13.5px;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 12px;cursor:pointer;color:var(--ink)}
+  .tbtn:hover{background:var(--moss)}
+  .tbtn:focus-visible{outline:3px solid var(--clay);outline-offset:2px}
+  details.cat{margin-top:26px}
+  details.cat>summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:6px 4px;border-radius:10px;margin-bottom:12px}
+  details.cat>summary::-webkit-details-marker{display:none}
+  details.cat>summary:focus-visible{outline:3px solid var(--clay);outline-offset:2px}
+  details.cat>summary h2{font-family:var(--serif);font-size:25px;margin:0;color:var(--forest)}
+  details.cat>summary .cnt{font-size:13px;background:var(--moss);color:var(--forest);font-weight:600;border-radius:999px;padding:2px 9px}
+  details.cat>summary p{margin:0;color:var(--muted);font-size:15px;flex:1 1 260px}
+  details.cat>summary .chev{margin-left:auto;transition:transform .25s;color:var(--muted);font-size:14px}
+  details.cat:not([open])>summary .chev{transform:rotate(-90deg)}
+  details.cat:not([open])>summary{border-bottom:1px solid var(--line);border-radius:0}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+  .card{min-height:180px}
+  mark{background:#f3e3b6;color:inherit;border-radius:3px;padding:0 1px}
+  .empty{display:none;text-align:center;padding:40px 10px;color:var(--muted)}
+  .empty.show{display:block}
+  .concepts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:6px 0 10px}
+  .concepts figure{margin:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+  .concepts svg{display:block;width:100%;height:auto}
+  .concepts figcaption{font-size:12px;padding:6px 8px;color:var(--muted)}
+  .disc{font-size:12.5px;color:#7a5a3a;background:#f8f1e4;border:1px dashed #e0cfb2;border-radius:8px;padding:6px 10px;margin-top:8px}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 12px}
+  .kpi{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fbfaf5}
+  .kpi small{display:block;color:var(--muted);font-size:11.5px}
+  .kpi b{font-size:18px}
+  .kpi .up{color:#4c7a45;font-size:12px}.kpi .dn{color:var(--clay);font-size:12px}
+  .sms{background:#f1ece4;border-radius:14px 14px 14px 4px;padding:10px 12px;margin:6px 0 10px;max-width:92%}
+  .sms.es{background:#ebe7e1}
+  @media (max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .doc{overflow-x:auto}
+  @media (max-width:560px){.doc{padding:14px 12px}.doc table{font-size:12.5px}.doc th,.doc td{padding:6px 5px}}
+  /* v4: plan selection */
+  [hidden]{display:none!important}
+  body{padding-bottom:84px}
+  .card-wrap{position:relative;display:flex;opacity:0;transform:translateY(10px);animation:rise .5s ease forwards}
+  .card{flex:1;opacity:1;transform:none;animation:none;padding-top:20px}
+  .pick{position:absolute;top:16px;right:14px;z-index:2;display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--forest);background:#fff;border:1px solid var(--sage);border-radius:999px;padding:6px 11px 6px 8px;cursor:pointer;user-select:none;transition:background .2s,color .2s,border-color .2s,transform .25s}
+  .card-wrap:hover .pick{transform:translateY(-3px)}
+  .pick input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+  .pick .box{width:18px;height:18px;border-radius:5px;border:2px solid var(--leaf);display:grid;place-items:center;font-size:12px;line-height:1;color:transparent;background:#fff;transition:all .2s;flex:none}
+  .pick input:checked + .box{background:var(--leaf);color:#fff}
+  .pick input:focus-visible + .box{outline:3px solid var(--clay);outline-offset:2px}
+  .pick:hover{background:var(--moss)}
+  .card-wrap.selected .pick,.pick.on{background:var(--forest);border-color:var(--forest);color:#fff}
+  .card-wrap.selected .pick .box,.pick.on .box{border-color:#fff}
+  .card-wrap.selected .card{border-color:var(--leaf);box-shadow:inset 0 0 0 2px var(--leaf);background:#fbf1e6}
+  .pick.big{position:static;font-size:14px;padding:9px 14px 9px 10px;margin:0 0 14px}
+  .add-own{border:2px dashed var(--sage);background:#fbfaf3;align-items:flex-start;justify-content:center;min-height:180px}
+  .add-own .ic{margin-right:0;background:#fff}
+  .add-own:hover{border-color:var(--leaf);background:#fbf1e6}
+  .own-sec{margin-top:26px}
+  .own-sec h2{font-family:var(--serif);font-size:25px;margin:0 0 12px;color:var(--forest)}
+  .planbar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;background:rgba(44,52,58,.96);color:#f4f1e6;border-radius:16px;padding:10px 12px 10px 18px;box-shadow:0 12px 32px rgba(0,0,0,.25);width:max-content;max-width:calc(100% - 24px)}
+  .planbar .pb-count{font-size:14.5px;margin-right:4px}
+  .planbar .pb-count b{font-family:var(--serif);font-size:20px;color:#f3d9a4}
+  .planbar .tbtn{background:transparent;color:#f4f1e6;border-color:rgba(255,255,255,.35)}
+  .planbar .tbtn:hover{background:rgba(255,255,255,.12)}
+  .btn-primary{font:inherit;font-size:14.5px;font-weight:600;border:0;background:#f3d9a4;color:#3a2a1e;border-radius:999px;padding:10px 18px;cursor:pointer;transition:transform .15s,background .2s}
+  .btn-primary:hover{background:#f7e4bd;transform:translateY(-1px)}
+  .btn-primary:focus-visible,.planbar .tbtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+  .btn-primary[disabled]{opacity:.6;cursor:wait}
+  .modal .btn-primary{background:var(--forest);color:#fff}
+  .modal .btn-primary:hover{background:#2f3a41}
+  .modal .btn-primary:focus-visible{outline:3px solid var(--clay)}
+  .modal.small{width:min(560px,100%)}
+  .form{padding:20px 24px 24px;display:grid;gap:14px}
+  .form label{display:block;font-size:14px;font-weight:600;color:var(--ink)}
+  .form label input,.form label textarea{display:block;margin-top:6px}
+  .form .opt{font-weight:400;color:var(--muted)}
+  .form input,.form textarea{font:inherit;font-weight:400;font-size:15px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);width:100%}
+  .form textarea{resize:vertical;min-height:80px}
+  .form input:focus,.form textarea:focus{outline:none;border-color:var(--leaf);box-shadow:0 0 0 3px rgba(181,100,58,.2)}
+  .form input[aria-invalid="true"]{border-color:var(--clay)}
+  .err{color:#9a4b22;font-size:13.5px;margin:0;min-height:1em}
+  .form-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;align-items:center}
+  .r-body{display:grid;grid-template-columns:1.1fr 1fr;gap:4px}
+  @media (max-width:760px){.r-body{grid-template-columns:1fr}}
+  .r-list-wrap{padding:20px 24px;border-right:1px solid var(--line)}
+  @media (max-width:760px){.r-list-wrap{border-right:0;border-bottom:1px solid var(--line)}}
+  .r-group{margin:0 0 14px}
+  .r-group h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--forest);margin:0 0 6px}
+  .r-item{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;margin-bottom:6px;font-size:14.5px}
+  .r-item .ri-ic{flex:none}
+  .r-item .ri-t{flex:1}
+  .r-item .ri-t small{display:block;color:var(--muted);font-size:13px;white-space:pre-wrap}
+  .r-item button{flex:none;font:inherit;font-size:12.5px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px;cursor:pointer;color:#9a4b22}
+  .r-item button:hover{background:#fbe6d6}
+  .r-item button:focus-visible{outline:3px solid var(--clay);outline-offset:2px}
+  .r-empty{color:var(--muted);font-size:14.5px;background:#fbfaf3;border:1px dashed var(--line);border-radius:10px;padding:14px}
+  .r-note{font-size:12.5px;color:var(--muted);margin:0}
+  .thanks{padding:36px 28px 32px;text-align:center}
+  .thanks .big-ck{font-size:44px;line-height:1}
+  .thanks h3{font-family:var(--serif);font-size:24px;margin:10px 0 8px;color:var(--forest)}
+  .thanks p{color:var(--muted);max-width:520px;margin:0 auto 12px}
+  .thanks .form-actions{justify-content:center;margin-top:16px}
+  .status{font-size:13px;color:var(--leaf);min-height:1em}
+  @media (max-width:560px){.planbar{left:12px;right:12px;transform:none;width:auto}.card h3{margin-top:30px}}
+  @media print{.card-wrap{opacity:1;transform:none;animation:none}.planbar,.pick{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="sun" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <span class="eyebrow"><span aria-hidden="true">🪨</span> AI Team Vision Board</span>
+    <h1>What an AI team could do for <span class="co" data-company></span></h1>
+    <p class="lede">Specialized assistants that answer quote requests, turn yards into tons, draft delivery schedules, plan around heat and monsoon storms, keep contractors in the loop, watch stockpiles, chase invoices, and keep your social pages busy, across every part of a sand, gravel, rock, and aggregates business. You review everything before it goes out.</p>
+    <div class="stats" aria-label="Board summary">
+      <span class="stat"><b id="stat-ideas">0</b>ideas</span>
+      <span class="stat"><b id="stat-cats">0</b>areas of the business</span>
+      <span class="stat"><b>1</b>owner in control</span>
+    </div>
+    <div class="hero-row">
+      <span class="hint">Click a card to preview it. Tick <strong>Add to my plan</strong> on anything you want, then review your selections to request a custom quote.</span>
+    </div>
+  </div>
+  <svg class="hills" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,78 L140,78 L170,46 L330,46 L360,78 L620,78 L650,58 L760,58 L790,78 L1040,78 L1075,36 L1250,36 L1285,78 L1440,78 L1440,120 L0,120 Z" fill="#6b4a36" opacity=".55"/>
+    <path d="M0,95 C300,55 520,120 820,85 C1100,55 1260,105 1440,85 L1440,120 L0,120 Z" fill="#f7f3ec"/>
+  </svg>
+</header>
+
+<main>
+  <div class="sample-note" role="note"><span aria-hidden="true">ℹ️</span> <span><strong>Examples use sample data for illustration.</strong> All names, customers, addresses, companies, quantities, and numbers below are fictional, not real business data.</span></div>
+
+  <div class="toolbar">
+    <div class="search">
+      <span class="mag" aria-hidden="true">🔍</span>
+      <label for="q" class="sr">Search ideas</label>
+      <input id="q" type="search" placeholder="Search ideas: delivery, granite, quote, monsoon, reviews…" autocomplete="off">
+    </div>
+    <span class="count" id="count" aria-live="polite"></span>
+    <button type="button" class="tbtn" id="expand-all">Expand all</button>
+    <button type="button" class="tbtn" id="collapse-all">Collapse all</button>
+  </div>
+  <div class="filters" role="group" aria-label="Filter by category" id="filters"></div>
+  <div id="board"></div>
+  <div class="empty" id="empty">No ideas match that search. Try "delivery", "contractor", or "heat", or <button type="button" class="tbtn" id="empty-add">add your own idea</button>.</div>
+
+  <p class="est-note">⏱ "Est. time saved" tags are rough, illustrative estimates for discussion only, not promises or measured results. Actual results depend on your volume and workflow. Anything touching legal, tax, safety regulations, DOT, mining, permits, zoning, or insurance is a general reminder or research summary, not professional advice.</p>
+</main>
+
+<footer>
+  <strong data-presenter></strong>
+  <span>Presented by <span data-presenter></span> · Built around your business, reviewed by you.</span><br>
+  <span style="font-size:12.5px">Examples use sample data for illustration.</span>
+</footer>
+
+<div class="backdrop" id="backdrop" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title" id="modal" tabindex="-1">
+    <div class="m-head">
+      <div class="ic" id="m-icon" aria-hidden="true"></div>
+      <div><h2 id="m-title"></h2><p class="sub" id="m-sub"></p></div>
+      <button class="close" type="button" id="m-close" data-close aria-label="Close preview">×</button>
+    </div>
+    <div class="m-body">
+      <div>
+        <p class="label">Sample output</p>
+        <div class="doc" id="m-doc"></div>
+      </div>
+      <div class="side">
+        <label class="pick big" id="m-pick-label"><input type="checkbox" id="m-pick"><span class="box" aria-hidden="true">✓</span><span id="m-pick-txt">Add to my plan</span></label>
+        <p class="label">How it works</p>
+        <ul id="m-how"></ul>
+        <span class="tag" id="m-tag"></span>
+        <div class="control"><span class="ck" aria-hidden="true">✅</span><span><strong>You stay in control:</strong> drafts are reviewed before anything is sent.</span></div>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button type="button" id="m-prev">← Previous</button>
+      <span class="count" id="m-pos"></span>
+      <button type="button" id="m-next">Next →</button>
+    </div>
+    <p class="m-foot">Examples use sample data for illustration. Names, customers, quantities, and figures are fictional examples.</p>
+  </div>
+</div>
+<div class="planbar" id="planbar" role="region" aria-label="My plan">
+  <span class="pb-count" id="pb-count" aria-live="polite"><b>0</b> selected</span>
+  <button type="button" class="tbtn" id="pb-add">+ Add your own</button>
+  <button type="button" class="btn-primary" id="pb-review">Review my selections</button>
+</div>
+
+<div class="backdrop" id="custom-bd" aria-hidden="true">
+  <div class="modal small" role="dialog" aria-modal="true" aria-labelledby="c-title" tabindex="-1">
+    <div class="m-head">
+      <div class="ic" aria-hidden="true">➕</div>
+      <div><h2 id="c-title">Something else? Add your own</h2><p class="sub">Describe anything you'd like help with that isn't on the board. It will be added to your plan.</p></div>
+      <button class="close" type="button" data-close aria-label="Close">×</button>
+    </div>
+    <form class="form" id="custom-form" novalidate>
+      <label for="c-name">What do you need?
+        <input id="c-name" type="text" maxlength="90" placeholder="e.g. Track job-site delivery tickets for each contractor" autocomplete="off">
+      </label>
+      <label for="c-desc">Tell us a bit more <span class="opt">(optional)</span>
+        <textarea id="c-desc" rows="4" maxlength="800" placeholder="What happens today, what you'd like it to do, any tools you use…"></textarea>
+      </label>
+      <p class="err" id="c-err" role="alert"></p>
+      <div class="form-actions">
+        <button type="button" class="tbtn" data-close>Cancel</button>
+        <button type="submit" class="btn-primary">Add to my plan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="backdrop" id="review-bd" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="r-title" tabindex="-1">
+    <div class="m-head">
+      <div class="ic" aria-hidden="true">📋</div>
+      <div><h2 id="r-title">Review my selections</h2><p class="sub">Check your list, add anything we missed, and we'll email you a finalized quote.</p></div>
+      <button class="close" type="button" data-close aria-label="Close review">×</button>
+    </div>
+    <div id="r-main" class="r-body">
+      <div class="r-list-wrap">
+        <p class="label">Your plan · <span id="r-count">0 items</span></p>
+        <div id="r-list" tabindex="-1"></div>
+        <button type="button" class="tbtn" id="r-add">+ Add your own</button>
+      </div>
+      <form class="form" id="r-form" novalidate>
+        <p class="label" style="margin:0">Your contact info</p>
+        <label for="f-name">Your name
+          <input id="f-name" type="text" autocomplete="name" maxlength="90" required>
+        </label>
+        <label for="f-biz">Business name
+          <input id="f-biz" type="text" autocomplete="organization" maxlength="120" required>
+        </label>
+        <label for="f-email">Email
+          <input id="f-email" type="email" autocomplete="email" maxlength="120" required>
+        </label>
+        <label for="f-phone">Phone <span class="opt">(optional)</span>
+          <input id="f-phone" type="tel" autocomplete="tel" maxlength="40">
+        </label>
+        <label for="f-notes">Notes <span class="opt">(optional)</span>
+          <textarea id="f-notes" rows="3" maxlength="1500" placeholder="Timing, priorities, tools you already use…"></textarea>
+        </label>
+        <p class="err" id="r-err" role="alert"></p>
+        <div class="form-actions">
+          <span class="status" id="r-status" aria-live="polite"></span>
+          <button type="button" class="tbtn" id="r-copy">Copy summary</button>
+          <button type="submit" class="btn-primary" id="r-submit">Request my custom quote</button>
+        </div>
+        <p class="r-note" id="r-how"></p>
+      </form>
+    </div>
+    <div id="r-thanks" class="thanks" hidden>
+      <div class="big-ck" aria-hidden="true">✅</div>
+      <h3 id="r-thanks-title" tabindex="-1">Thanks! We'll review your selections and email you a finalized quote.</h3>
+      <p id="r-thanks-msg"></p>
+      <div class="form-actions">
+        <span class="status" id="r-status2" aria-live="polite"></span>
+        <button type="button" class="tbtn" id="r-copy2">Copy summary</button>
+        <button type="button" class="tbtn" id="r-edit">Edit my selections</button>
+        <button type="button" class="btn-primary" data-close>Back to the board</button>
+      </div>
+    </div>
+    <p class="m-foot">Examples use sample data for illustration. Your selections are saved on this device only.</p>
+  </div>
+</div>
+<script>
+(function(){
+  "use strict";
+  var qs = new URLSearchParams(location.search);
+  if (qs.get("company")) COMPANY_NAME = qs.get("company");
+  if (qs.get("presenter")) PRESENTER = qs.get("presenter");
+
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  var CO = function(){return esc(COMPANY_NAME);};
+  var CITY = function(){return "Phoenix metro";};
+  var val = function(x){return typeof x === "function" ? x() : x;};
+
+  /* ---- mock-document helpers ---- */
+  function H(t, m){return '<h4>'+t+'</h4>'+(m?'<p class="meta">'+m+'</p>':'');}
+  function P(t){return '<p>'+t+'</p>';}
+  function B(t){return '<p><strong>'+t+'</strong></p>';}
+  function L(items, ol){var tg=ol?'ol':'ul';return '<'+tg+'>'+items.map(function(i){return '<li>'+i+'</li>';}).join('')+'</'+tg+'>';}
+  function C(t, green){return '<div class="callout'+(green?' green':'')+'">'+t+'</div>';}
+  function D(t){return '<div class="disc">'+t+'</div>';}
+  function pl(t, k){return '<span class="pill'+(k?' '+k:'')+'">'+t+'</span>';}
+  var DRAFT = '<span class="draft-badge">✏️ Draft, waiting for your review</span>';
+  function isNum(s){return /^[\s$−\-+~≈]*[\d.,]+[%k]?(\s|$|\/|\))/.test(String(s)) || /^\$/.test(String(s));}
+  function T(head, rows){
+    var h='<table><tr>'+head.map(function(x){return '<th>'+x+'</th>';}).join('')+'</tr>';
+    rows.forEach(function(r){var tot=!Array.isArray(r); var cells=tot?r.t:r;
+      h+='<tr'+(tot?' class="total"':'')+'>'+cells.map(function(c,i){return '<td'+(i>0&&isNum(c)?' class="n"':'')+'>'+c+'</td>';}).join('')+'</tr>';});
+    return h+'</table>';
+  }
+  function E(o){
+    return DRAFT+'<div class="meta">'+(o.to?'<div><b>To:</b> '+o.to+'</div>':'')+(o.subj?'<div><b>Subject:</b> '+o.subj+'</div>':'')+'</div>'+
+      o.body.map(P).join('')+(o.sign===false?'':P('Thanks,<br>'+CO()))+(o.note?C(o.note, o.green):'');
+  }
+  function SMS(to, msgs, note){
+    return DRAFT+'<div class="meta"><div><b>Text to:</b> '+to+'</div></div>'+msgs.map(function(m){return '<div class="sms'+(m.es?' es':'')+'">'+(m.es?'<small>🇪🇸 Español</small><br>':'')+(m.t||m)+'</div>';}).join('')+(note?C(note,true):'');
+  }
+  function KPI(items){return '<div class="kpis">'+items.map(function(k){return '<div class="kpi"><small>'+k[0]+'</small><b>'+k[1]+'</b> '+(k[2]?'<span class="'+(k[3]||'up')+'">'+k[2]+'</span>':'')+'</div>';}).join('')+'</div>';}
+  function bars(rows){return T(['Category','Spent','Budget','Used'], rows.map(function(r){var pct=Math.round(r[1]/r[2]*100), over=pct>100;
+      return [r[0], '$'+r[1].toLocaleString(), '$'+r[2].toLocaleString(), '<div class="bar'+(over?' over':'')+'"><span style="width:'+Math.min(pct,100)+'%"></span></div><small>'+pct+'%'+(over?' ⚠️':'')+'</small>'];}));}
+  function concept(kind){
+    var sky = '#f3dcc0';
+    var front = '<svg viewBox="0 0 320 180" role="img" aria-label="Concept sketch: desert front yard with warm rock, boulders and a granite path"><rect width="320" height="180" fill="'+sky+'"/><rect x="80" y="38" width="160" height="70" fill="#e9d3b4"/><path d="M70,40 L160,10 L250,40 Z" fill="#b5643a"/><rect x="146" y="70" width="28" height="38" fill="#6b4a36"/><rect y="104" width="320" height="76" fill="#c9a27a"/><g fill="#a97e57" opacity=".7"><circle cx="20" cy="130" r="2"/><circle cx="60" cy="150" r="2"/><circle cx="100" cy="125" r="2"/><circle cx="230" cy="140" r="2"/><circle cx="280" cy="160" r="2"/><circle cx="300" cy="125" r="2"/><circle cx="40" cy="170" r="2"/><circle cx="260" cy="120" r="2"/></g><path d="M146,108 L174,108 L196,180 L124,180 Z" fill="#e2b862"/><ellipse cx="60" cy="122" rx="22" ry="12" fill="#8a6a48"/><ellipse cx="262" cy="134" rx="18" ry="10" fill="#7a5a3a"/><rect x="35" y="72" width="8" height="40" rx="4" fill="#5f7a4a"/><rect x="26" y="84" width="6" height="16" rx="3" fill="#5f7a4a"/><rect x="46" y="80" width="6" height="18" rx="3" fill="#5f7a4a"/></svg>';
+    var modern = '<svg viewBox="0 0 320 180" role="img" aria-label="Concept sketch: modern front yard with gray rock and black trim"><rect width="320" height="180" fill="#dfe6ea"/><rect x="70" y="34" width="180" height="74" fill="#f2f0ec"/><rect x="62" y="28" width="196" height="8" fill="#2a2622"/><rect x="100" y="56" width="40" height="26" fill="#2a2622"/><rect x="180" y="62" width="30" height="46" fill="#3e4a52"/><rect y="104" width="320" height="76" fill="#9aa1a6"/><g fill="#7d8489"><circle cx="30" cy="140" r="2"/><circle cx="80" cy="160" r="2"/><circle cx="250" cy="130" r="2"/><circle cx="290" cy="165" r="2"/><circle cx="130" cy="170" r="2"/></g><rect x="180" y="108" width="30" height="72" fill="#d9d4cb"/><rect x="186" y="120" width="18" height="8" fill="#c8c2b8"/><rect x="186" y="140" width="18" height="8" fill="#c8c2b8"/><rect x="186" y="160" width="18" height="8" fill="#c8c2b8"/><ellipse cx="70" cy="128" rx="20" ry="10" fill="#5d6468"/><path d="M262,124 l6,-26 l6,26 z M252,126 l10,-18 l2,18 z" fill="#6b8a5a"/></svg>';
+    var creek = '<svg viewBox="0 0 320 180" role="img" aria-label="Concept sketch: dry creek bed with river rock and boulders"><rect width="320" height="180" fill="#f3dcc0"/><path d="M0,70 L80,70 L100,50 L180,50 L200,70 L320,70 L320,180 L0,180 Z" fill="#b98a62" opacity=".5"/><rect y="90" width="320" height="90" fill="#d1ad83"/><path d="M0,150 C60,120 110,170 170,135 C220,108 260,140 320,115 L320,140 C260,165 220,135 170,160 C110,190 60,145 0,175 Z" fill="#9c8c7a"/><g fill="#c9bcad"><ellipse cx="40" cy="160" rx="6" ry="4"/><ellipse cx="90" cy="150" rx="7" ry="4"/><ellipse cx="140" cy="152" rx="6" ry="4"/><ellipse cx="200" cy="140" rx="7" ry="4"/><ellipse cx="250" cy="138" rx="6" ry="4"/><ellipse cx="295" cy="128" rx="6" ry="4"/><ellipse cx="170" cy="150" rx="5" ry="3"/></g><ellipse cx="60" cy="128" rx="20" ry="12" fill="#7a5a3a"/><ellipse cx="230" cy="118" rx="16" ry="10" fill="#8a6a48"/><path d="M5,0 h310 v20 h-310z" fill="#9fb3c2" opacity=".35"/></svg>';
+    var piles = '<svg viewBox="0 0 320 180" role="img" aria-label="Concept sketch: material stockpiles in a yard"><rect width="320" height="180" fill="#f3dcc0"/><circle cx="270" cy="40" r="18" fill="#f2c46d" opacity=".8"/><rect y="120" width="320" height="60" fill="#cdb393"/><path d="M10,130 Q55,50 100,130 Z" fill="#e2b862"/><path d="M90,132 Q140,40 190,132 Z" fill="#a9a29a"/><path d="M180,134 Q230,60 280,134 Z" fill="#b5643a"/><path d="M250,136 Q285,90 318,136 Z" fill="#8f8a84"/><g fill="#fffdf9"><rect x="30" y="140" width="50" height="14" rx="3"/><rect x="115" y="142" width="50" height="14" rx="3"/><rect x="205" y="144" width="50" height="14" rx="3"/></g><g fill="#6b625a" font-family="Inter,Arial,sans-serif" font-size="8"><text x="38" y="150">GRANITE</text><text x="126" y="152">GRAVEL</text><text x="216" y="154">ROCK</text></g></svg>';
+    return kind==='modern'?modern:kind==='creek'?creek:kind==='piles'?piles:front;
+  }
+
+  var CATS = [
+    {id:"quotes",  name:"Quotes & Sales",                 blurb:"Answer every quote request fast, turn yards into tons, and win more contractor work."},
+    {id:"dispatch",name:"Dispatch & Delivery",            blurb:"Loads, routes, ETAs, and heat or monsoon changes, sorted before the first truck rolls."},
+    {id:"yard",    name:"Yard & Inventory",               blurb:"Stockpiles, spec sheets, and seasonal demand, so the right material is on the ground."},
+    {id:"accts",   name:"Contractor & Commercial Accounts",blurb:"Onboard, serve, and grow the landscapers, builders, and businesses who buy every week."},
+    {id:"cx",      name:"Customer Experience",            blurb:"Clear answers on how much, which color, and when, for homeowners and pros alike."},
+    {id:"social",  name:"Social Media",                   blurb:"A steady stream of post drafts, captions, and scripts. You approve every post; nothing is ever published on its own."},
+    {id:"mkt",     name:"Marketing",                      blurb:"Get found when the Valley searches for rock, decomposed granite, and fill dirt."},
+    {id:"safety",  name:"Safety, Fleet & Compliance",     blurb:"Briefings and reminders that keep drivers, operators, and trucks safe. General reminders, not legal advice."},
+    {id:"admin",   name:"Office & Admin",                 blurb:"Inbox, invoices, hiring, and paperwork, off your plate."},
+    {id:"money",   name:"Money & Planning",               blurb:"Fuel, budgets, cash flow, and the numbers that matter, in plain English."},
+    {id:"growth",  name:"Growth & Strategy",              blurb:"Spot new markets, new customers, and what to do next."}
+  ];
+  var CARDS = [
+  /* ================= QUOTES & SALES ================= */
+  {cat:"quotes", icon:"📥", title:"Quote request intake from every channel",
+   benefit:"Get a Quote form emails, phone messages, and inbox requests become one clean list with next steps.",
+   tag:"~5 min per request",
+   how:["Connects to the inbox where your website quote form and voicemail-transcript emails land.","Pulls out pickup vs. delivery, product type, quantity, and delivery address, then logs it in a request sheet.","Drafts a same-day reply so no request waits overnight."],
+   doc:function(){return H('New quote requests · last 24 hours','Prepared 5:15 AM · sample requests')+
+     T(['Customer','Type','Product','Area','Priority'],[
+       ['M. Rivera (homeowner)','Delivery','Decomposed granite','Peoria',pl('Hot','warn')],
+       ['Desert Edge Landscaping (fictional)','Delivery','Decorative rock, 3 loads','Surprise',pl('Hot','warn')],
+       ['J. Patel (homeowner)','Pickup','Pavers + sand','Phoenix',pl('Warm')],
+       ['Cactus Wren Builders (fictional)','Delivery','Fill dirt + rip rap','Buckeye',pl('Warm')]])+
+     B('Voicemail summary (J. Patel)')+P('"Wants to pick up pavers and paver sand Saturday morning for a small patio. Asking how many bags of sand for about 120 square feet."')+
+     C('4 reply drafts are ready in your drafts folder. Desert Edge asked for delivery before 7 AM on Thursday.',true);}},
+
+  {cat:"quotes", icon:"📝", title:"Quote reply drafts",
+   benefit:"Turns a quote form into a ready-to-review reply with products, quantities, and delivery details filled in.",
+   tag:"~15 min per quote",
+   how:["Watches your quote-request inbox and website form emails.","Uses your own product list, conversion factors, and current price sheet to build the line items.","Drops a draft reply in your drafts folder for you to check and send."],
+   doc:function(){return DRAFT+'<div class="meta"><div><b>To:</b> M. Rivera (sample customer)</div><div><b>Subject:</b> Your decomposed granite quote from '+CO()+'</div></div>'+
+     P('Hi Maria,')+P("Thanks for reaching out about the front yard. Based on the 900 sq ft you mentioned at about 2 inches deep, here's what we'd suggest:")+
+     T(['Item','Qty','Notes'],[
+       ['1/2″ minus decomposed granite (sample color)','≈ 8 tons','≈ 5.6 cu yd'],
+       ['Weed barrier fabric','1 roll set','Covers ~900 sq ft'],
+       ['Delivery, 10-ton truck','1 load','Peoria address'],{t:['Pricing','','From current price list']}])+
+     P('We can deliver as early as Thursday. Want me to hold a spot on the schedule?')+P('Best,<br>'+CO())+
+     C('Note for you: prices fill in from your current price sheet when you approve. Customer mentioned a narrow side gate, so a drop on the driveway is likely best.');}},
+
+  {cat:"quotes", icon:"🧮", title:"Yards-to-tons quote math",
+   benefit:"Area and depth in, cubic yards and tons out, with the math shown so anyone at the counter can check it.",
+   tag:"~10 min per quote",
+   how:["Reads the square footage and depth from the request (or asks for it in the reply draft).","Applies your own material weights and the same factors your website calculators use.","Shows the math line by line and rounds up to a sensible truckload."],
+   doc:function(){return H('Material math · sample request','1,200 sq ft front yard + 300 sq ft side yard')+
+     T(['Area','Material','Depth','Cu yd','Tons'],[
+       ['Front yard, 1,200 sq ft','Decomposed granite','2″','7.4','≈ 10.4'],
+       ['Side yard, 300 sq ft','3/4″ decorative rock','3″','2.8','≈ 3.9'],
+       ['Border, 60 ln ft × 2 ft','River rock','4″','1.5','≈ 2.1'],{t:['Total','','','11.7','≈ 16.4']}])+
+     L(['Cubic yards = sq ft × depth (ft) ÷ 27.','Tons = cubic yards × weight per yard (example factor: 1.4 tons/yd).','Suggestion: one 18-ton class load covers everything with a little extra.'])+
+     D('Weights are example factors for illustration. The real version uses your own material weights.');}},
+
+  {cat:"quotes", icon:"🏗️", title:"Contractor bid material takeoffs",
+   benefit:"Turns a contractor's plan notes or bid list into a material schedule by product, tons, and loads.",
+   tag:"1–2 hrs per bid",
+   how:["You forward the contractor's material list, plan notes, or bid sheet.","Builds a takeoff by product with tons, truckloads, and suggested delivery phases.","Drafts the bid reply; you set the pricing and send."],
+   doc:function(){return DRAFT+H('Material takeoff: Mesa Vista retail pad (sample)','Prepared for Cactus Wren Builders (fictional) · quantities only')+
+     T(['Phase','Material','Tons','Loads'],[
+       ['1 · Site prep','Fill dirt','≈ 420','~18'],
+       ['2 · Base','Aggregate base','≈ 260','~11'],
+       ['3 · Drainage','Rip rap (sample size)','≈ 48','~2'],
+       ['4 · Landscape','Decorative rock + decomposed granite','≈ 95','~5'],{t:['Total','','≈ 823','~36']}])+
+     C('Questions to confirm before you price: compaction spec for base, rip rap size class, and whether the contractor wants weekend deliveries.');}},
+
+  {cat:"quotes", icon:"📬", title:"Follow-ups on unanswered quotes",
+   benefit:"Gently nudges customers who haven't answered a quote after a few days.",
+   tag:"2–3 hrs per week",
+   how:["Runs every weekday morning as a scheduled routine.","Checks sent quotes with no reply after 3 and 7 days.","Drafts a short, friendly follow-up for each one; you approve and send."],
+   doc:function(){return H('Morning follow-up list','4 quotes with no reply · prepared 5:30 AM')+
+     T(['Customer','Quote','Days','Draft'],[['M. Rivera','Decomposed granite delivery','3',pl('Ready')],['Desert Edge Landscaping','Decorative rock, 3 loads','7',pl('Ready')],['L. Chen','River rock + boulders','4',pl('Ready')],['Saguaro Ridge HOA (fictional)','Common-area rock refresh','7',pl('Ready')]])+
+     E({to:'L. Chen (sample)',subj:'Quick check-in on your river rock quote',body:["Hi Lily, just checking that our river rock quote landed OK. If you'd like to see the color in person first, both of our yards have it on display. Want me to hold a delivery spot for next week?"]});}},
+
+  {cat:"quotes", icon:"➕", title:"Smart add-on pairings",
+   benefit:"Suggests what usually goes with an order: decomposed granite with stabilizer and weed barrier, pavers with base and sand.",
+   tag:"~1 hr per week",
+   how:["Looks at what's on each quote or order.","Matches it to the add-ons you choose to recommend.","Adds a short, helpful line to the reply draft. Never pushy, and you can turn it off."],
+   doc:function(){return H('Add-on suggestions · this week','Based on sample quotes')+
+     T(['Customer ordered','Suggest','Why it helps'],[
+       ['Decomposed granite, 8 tons','Stabilizer + weed barrier','Firmer path, fewer weeds'],
+       ['Pavers, 200 sq ft','Base rock + paver sand + edge restraint','Everything for one install'],
+       ['Decorative rock, 12 tons','Landscape boulders (3)','Finished, natural look'],
+       ['Fill dirt, 2 loads','Top soil, 1 load','Better surface for planting']])+
+     C('Tip: one helpful "most people also grab…" line converts better than a separate sales email.',true);}},
+
+  {cat:"quotes", icon:"🏆", title:"Quote win/loss tracker",
+   benefit:"Shows which quotes turn into orders, which don't, and why, by product and customer type.",
+   tag:"~1 hr per month",
+   how:["Logs each quote's outcome from sent and replied emails or your order sheet.","Drafts a one-line \"what tipped it?\" question for lost quotes, for your OK.","Monthly summary by product, customer type, and response time."],
+   doc:function(){return H('Win/loss · last 90 days','Sample data for illustration')+
+     T(['Customer type','Quotes','Won','Win rate'],[['Homeowners','120','71','59%'],['Landscapers','64','48','75%'],['Contractors','22','11','50%'],['Businesses / HOAs','9','4','44%']])+
+     L(['Top loss reason: "found it closer to home" (sample).','Quotes answered same day won far more often than next-day replies.','Idea: offer yard pickup as an option in every homeowner reply.']);}},
+
+  {cat:"quotes", icon:"🛒", title:"Online shop order questions",
+   benefit:"Drafts quick answers to customers with questions about an online shop order: delivery day, quantity, or pickup.",
+   tag:"~5 min per question",
+   how:["Watches the inbox where online shop order emails and customer replies arrive.","Matches each question to the order and drafts a clear answer.","Flags anything that needs a person, like a change to the delivery address."],
+   doc:function(){return H('Shop order questions · today','Sample orders')+
+     T(['Order','Question','Draft'],[['#10482 (sample)','"Can I pick up instead?"',pl('Ready')],['#10487 (sample)','"Is 2 tons enough for 150 sq ft?"',pl('Ready')],['#10491 (sample)','"Change delivery address"',pl('Needs you','warn')]])+
+     E({to:'Order #10487 customer (sample)',subj:'Re: your rock order',body:["Hi Sam, good question. At 3 inches deep, 150 sq ft needs about 1.4 cubic yards, which is roughly 2 tons. So you're right on. If you want a little extra for low spots, bump it to 2.5 tons."]});}},
+
+  {cat:"quotes", icon:"🪨", title:"Yard visit follow-ups",
+   benefit:"After someone browses rock in person, a friendly follow-up with the colors they liked and a quote offer.",
+   tag:"~10 min per visitor",
+   how:["Your counter team jots a quick note (name, email, rocks they liked).","Drafts a follow-up with those product names, sizes, and a coverage estimate.","You send it the same day while they're still deciding."],
+   doc:function(){return E({to:'D. Morales (sample visitor)',subj:'The rock colors you liked at our yard',body:["Hi Daniel, thanks for stopping by our yard today. Here are the two you were deciding between:","• 3/4″ desert-tone rock (sample): warm browns that hide dust well.<br>• 1″ gray granite (sample): cooler look, great with modern homes.","For your 600 sq ft at 2 inches, either one is about 5 tons. Reply with your pick and we'll get a delivery date on the calendar."]});}},
+
+  {cat:"quotes", icon:"🔁", title:"Reorder nudges for repeat buyers",
+   benefit:"Spots landscapers and contractors who usually reorder every few weeks and drafts a timely check-in.",
+   tag:"~1 hr per week",
+   how:["Reads order history from your sheet or invoices.","Notices when a regular buyer is past their usual reorder window.","Drafts a short, personal check-in; you choose who gets it."],
+   doc:function(){return H('Reorder check-ins · this week','Sample accounts')+
+     T(['Account','Usually orders','Last order','Status'],[['Desert Edge Landscaping','Every ~2 weeks','19 days ago',pl('Due','warn')],['Ocotillo Outdoor (fictional)','Every ~3 weeks','16 days ago',pl('Soon')],['Palo Verde Pools (fictional)','Monthly','35 days ago',pl('Due','warn')]])+
+     E({to:'Palo Verde Pools (sample)',subj:'Need anything for next week\'s jobs?',body:["Hi Rosa, it's been about a month since your last load. If you have pool decks or backfills coming up, reply with what you need and we'll get you on the schedule early."]});}},
+
+  {cat:"quotes", icon:"🗣️", title:"Bilingual quote replies",
+   benefit:"Quote replies and follow-ups in English or Spanish, whichever the customer used.",
+   tag:"~10 min per quote",
+   how:["Detects the language of the request.","Drafts the reply in the same language, using your product names and terms.","You review before sending; it never sends on its own."],
+   doc:function(){return SMS('R. Gutiérrez (sample customer)',[{es:true,t:'Hola Roberto, gracias por su solicitud. Para 1,000 pies cuadrados de granito descompuesto a 2 pulgadas, necesita unas 9 toneladas. ¿Prefiere entrega o recogerlo en la yarda?'},'(English: For 1,000 sq ft of decomposed granite at 2 inches, you need about 9 tons. Delivery or yard pickup?)'],'Draft only. You review the wording before anything is sent.');}},
+
+  {cat:"quotes", icon:"📊", title:"Large-project proposal decks",
+   benefit:"A clean, interactive material-supply proposal for HOAs, commercial sites, and builders.",
+   tag:"~3 hrs per proposal",
+   how:["You give it the project notes, quantities, and your terms.","Builds an interactive presentation file you can open on a laptop or tablet.","You edit the wording and numbers before it goes anywhere."],
+   doc:function(){return H('Proposal deck: Saguaro Ridge HOA rock refresh (sample)','6 slides · interactive presentation file')+
+     '<div class="slides">'+
+     '<div class="slide dark"><small>'+CO()+'</small><b>Material Supply Proposal<br>Saguaro Ridge HOA</b><small>Common-area rock refresh</small></div>'+
+     '<div class="slide"><b>What we heard</b><small>• Faded rock in entries<br>• Weeds through thin areas<br>• Minimal disruption</small></div>'+
+     '<div class="slide"><b>Materials</b><small>Decorative rock · weed barrier · accent boulders</small></div>'+
+     '<div class="slide"><b>Quantities</b><small>≈ 140 tons across 4 areas · phased</small></div>'+
+     '<div class="slide"><b>Delivery plan</b><small>Early-morning drops · 4 phases · weekdays</small></div>'+
+     '<div class="slide dark"><b>Next steps</b><small>Board review → color sample walk → schedule</small></div></div>';}},
+  /* ================= DISPATCH & DELIVERY ================= */
+  {cat:"dispatch", icon:"🗓️", title:"Daily delivery schedule drafts",
+   benefit:"Tomorrow's loads laid out by truck, time window, material, and yard, ready for dispatch to adjust.",
+   tag:"~1 hr per day",
+   how:["Runs every afternoon as a scheduled routine.","Pulls confirmed orders from your order sheet or inbox.","Drafts a schedule by truck and window; dispatch moves things around before it's final."],
+   doc:function(){return H('Draft delivery schedule · tomorrow','Sample orders · trucks shown by size class')+
+     T(['Window','Truck','Customer','Material','Tons','Loads from'],[
+       ['6:00–7:00','10-ton','Desert Edge Landscaping','Decorative rock','10','Glendale yard'],
+       ['6:30–8:00','24-ton','Cactus Wren Builders','Fill dirt','24','Phoenix yard'],
+       ['8:00–9:30','5-ton','M. Rivera','Decomposed granite','5','Glendale yard'],
+       ['9:00–10:30','10-ton','L. Chen','River rock','8','Phoenix yard'],
+       ['10:30–12:00','24-ton','Cactus Wren Builders','Fill dirt','24','Phoenix yard']])+
+     C('Heads-up: high heat forecast after 1 PM, so the schedule keeps all homeowner drops before noon.');}},
+
+  {cat:"dispatch", icon:"🗺️", title:"Route grouping by area",
+   benefit:"Groups the day's drops by part of the Valley so trucks spend less time crossing town.",
+   tag:"~30 min per day",
+   how:["Reads delivery addresses from the day's orders.","Groups them by area and suggests which yard each run should load from.","Gives dispatch a simple run order to accept or change."],
+   doc:function(){return H('Suggested runs · tomorrow','Sample addresses grouped by area')+
+     T(['Run','Area','Stops','Suggested yard'],[['A','West Valley (Glendale, Peoria, Surprise)','5','Glendale'],['B','Central Phoenix','3','Phoenix'],['C','Southwest (Laveen, Buckeye)','2','Phoenix'],['D','East Valley (Tempe, Mesa)','2','Phoenix']])+
+     C('Run A has two drops on the same street in Peoria. Pairing them saves one round trip.',true)+
+     D('A planning summary only. Your dispatcher decides final routes.');}},
+
+  {cat:"dispatch", icon:"💬", title:"Customer ETA texts & emails",
+   benefit:"Day-before confirmations and on-the-way messages drafted for every delivery, in English or Spanish.",
+   tag:"~1 hr per day",
+   how:["Reads tomorrow's schedule draft.","Drafts a confirmation with the delivery window and drop-spot reminder.","Sends nothing on its own; you approve, or plug it into the texting tool you already use."],
+   doc:function(){return SMS('M. Rivera (sample customer)',['Hi Maria, this is '+CO()+'. Your decomposed granite delivery is set for tomorrow between 8:00 and 9:30 AM. Please make sure the drop spot is clear and cars are moved. Reply here with any questions!',{es:true,t:'Hola María, le habla '+CO()+'. Su entrega de granito descompuesto está programada para mañana entre 8:00 y 9:30 AM. Por favor deje libre el lugar de descarga.'}],'Option: an "on the way" message when the truck leaves the yard.');}},
+
+  {cat:"dispatch", icon:"🌡️", title:"Heat & monsoon delay notices",
+   benefit:"Checks the forecast every afternoon and drafts schedule changes and customer notices for extreme heat, dust, or storms.",
+   tag:"~1–2 hrs per weather event",
+   how:["A daily routine checks National Weather Service alerts for the Valley.","Flags deliveries that fall inside excessive-heat, dust-storm, or flash-flood windows.","Drafts move-up or reschedule notices for your OK."],
+   doc:function(){return H('Weather check · tomorrow','Sample forecast summary')+
+     T(['Time','Forecast','Impact'],[['5–10 AM','Hot, clear',pl('OK')],['After 1 PM','Excessive heat warning',pl('Move drops earlier','warn')],['Evening','Monsoon storm chance, blowing dust',pl('Watch','blue')]])+
+     E({to:'L. Chen (sample)',subj:'Moving your delivery earlier tomorrow',body:["Hi Lily, with extreme heat expected tomorrow afternoon, we'd like to move your river rock delivery up to 7:00–8:30 AM. Does that work? If not, we can do Friday morning instead."]});}},
+
+  {cat:"dispatch", icon:"📸", title:"Drop-spot photos & delivery confirmations",
+   benefit:"Ask for a photo of the drop spot before delivery, and send a friendly confirmation after.",
+   tag:"~30 min per day",
+   how:["Adds a \"send us a photo of where you'd like it\" line to confirmation drafts.","Collects replies and attaches them to the day's schedule for drivers.","Drafts a delivered confirmation afterward with care tips and a review link."],
+   doc:function(){return B('Before delivery')+E({to:'J. Morgan (sample)',subj:'Where should we drop your rock?',sign:false,body:['Hi James, to help our driver, could you reply with a quick photo of where you want the rock dropped? Please note any low wires, sprinkler heads, or soft spots.']})+
+     B('After delivery')+E({to:'J. Morgan (sample)',subj:'Your rock was delivered',body:["Your 10 tons of decorative rock were dropped on the driveway at 8:42 AM. Tip: spread it within a few days, and rinse any dust off the concrete. Thanks for choosing us!"]});}},
+
+  {cat:"dispatch", icon:"🚛", title:"Truck capacity planning",
+   benefit:"Matches each order to the right truck size, from small drops to full loads, so trucks run full and nothing runs over.",
+   tag:"~30 min per day",
+   how:["Reads order tonnage and the truck sizes in your fleet.","Suggests the best truck for each order and combines small orders where it makes sense.","Shows trucks that look under-used so dispatch can fill gaps."],
+   doc:function(){return H('Capacity plan · tomorrow','Sample fleet and orders')+
+     T(['Truck class','Loads planned','Tons planned','Use'],[['5-ton','4','17','85%'],['10-ton','5','44','88%'],['24-ton','3','68','94%'],['24-ton (#2)','1','24','33% ⚠️']])+
+     C('24-ton #2 has room for two more loads. Cactus Wren Builders asked for extra fill this week; offer them a second morning slot.');}},
+
+  {cat:"dispatch", icon:"📋", title:"Delivery prep checklist for customers",
+   benefit:"A clear \"before your delivery\" guide: access, drop spot, driveway protection, and HOA rules.",
+   tag:"~15 min per order",
+   how:["Builds a one-page checklist from your delivery rules.","Attaches it to every delivery confirmation draft.","Updates it any time you change a policy."],
+   doc:function(){return H('Before your delivery (sample guide)',CO()+' · delivery customers')+
+     L(['Clear a drop area about the size of a parking space, with room for the truck to back in.','Move cars, trash cans, and anything low-hanging.','Check for overhead wires, tree limbs, and sprinkler heads.','Some customers lay plywood to protect driveways. Ask us if you\'re unsure.','Check your HOA rules on where material can sit and for how long.'],true)+
+     C('Questions? Reply to your confirmation email and we\'ll help.',true);}},
+
+  {cat:"dispatch", icon:"🔄", title:"Reschedule & cancellation handling",
+   benefit:"Reads \"can we move it?\" replies, suggests a new slot, and updates the schedule draft.",
+   tag:"~20 min per day",
+   how:["Watches replies to your confirmation emails and messages.","Suggests the next open window from the schedule draft.","Drafts the reply and flags the change for dispatch."],
+   doc:function(){return H('Changes requested today','Sample replies')+
+     T(['Customer','Request','Suggested'],[['L. Chen','Move to Friday','Fri 7:00–8:30 AM'],['Ocotillo Outdoor','Add 1 load','Same run, Truck 3'],['J. Patel','Cancel pickup','Confirm + offer next Saturday']])+
+     E({to:'L. Chen (sample)',subj:'Re: moving my delivery',body:['No problem, Lily. You\'re now set for Friday between 7:00 and 8:30 AM. We\'ll send a reminder the day before.']});}},
+
+  {cat:"dispatch", icon:"🏁", title:"End-of-day delivery recap",
+   benefit:"One short summary each afternoon: loads delivered, tons moved, late drops, and notes for tomorrow.",
+   tag:"~30 min per day",
+   how:["Runs at closing as a scheduled routine.","Pulls from completed delivery tickets or your dispatch sheet.","Highlights anything that needs follow-up tomorrow."],
+   doc:function(){return H('Delivery recap · today','Sample figures for illustration')+
+     KPI([['Loads delivered','18','+2 vs plan'],['Tons moved','214',''],['On-time windows','16 of 18','',''],['Customer notes','3',''],['Missed drops','1','','dn'],['Redeliveries','0','']])+
+     L(['Peoria drop delayed 40 min: gate code missing. Added a "gate code?" line to confirmation drafts.','Desert Edge asked for a standing Thursday 6 AM slot.']);}},
+
+  {cat:"dispatch", icon:"🧾", title:"Delivery ticket summaries",
+   benefit:"Matches delivery tickets to orders and flags missing signatures, wrong quantities, or unbilled loads.",
+   tag:"~1 hr per day",
+   how:["Reads scanned or emailed delivery tickets.","Matches each one to its order and invoice.","Lists mismatches for the office to fix before invoices go out."],
+   doc:function(){return H('Ticket check · yesterday','Sample tickets')+
+     T(['Ticket','Order','Issue'],[['T-2214','#10482',pl('OK')],['T-2215','#10487','No signature',],['T-2219','#10490','Ticket 12 tons, order 10 tons'],['T-2222','(none)','Load with no matching invoice']])+
+     C('3 items need a look before billing. Drafts for the two customer-facing ones are ready.');}},
+
+  {cat:"dispatch", icon:"🏘️", title:"Phased job-site deliveries",
+   benefit:"Sequences deliveries for contractor jobs so base, pipe bedding, and finish rock arrive in the right order.",
+   tag:"~1 hr per project",
+   how:["You share the contractor's schedule or email thread.","Builds a phase-by-phase delivery plan with dates and tonnage.","Drafts reminders to the contractor two days before each phase."],
+   doc:function(){return H('Delivery plan: Mesa Vista retail pad (sample)','Cactus Wren Builders (fictional)')+
+     T(['Phase','Material','Target week','Status'],[['Site prep','Fill dirt','Week 1',pl('Done')],['Base','Aggregate base','Week 3',pl('Next','blue')],['Drainage','Rip rap','Week 5',pl('Planned')],['Landscape','Decorative rock + DG','Week 9',pl('Planned')]])+
+     E({to:'Cactus Wren Builders (sample)',subj:'Base deliveries next week: still on?',body:['Hi Tom, checking we\'re still on for aggregate base deliveries the week of the 18th. Same gate and site contact as before?']});}},
+  /* ================= YARD & INVENTORY ================= */
+  {cat:"yard", icon:"📉", title:"Low-stock watch list",
+   benefit:"A daily list of materials running low at each yard, based on your counts and what's been ordered.",
+   tag:"~1 hr per week",
+   how:["Reads your stockpile counts or yard notes from a shared sheet.","Compares them to recent sales and scheduled deliveries.","Flags what will run short, so production or ordering can catch up."],
+   doc:function(){return H('Low-stock watch · this morning','Sample counts for illustration')+
+     T(['Material','Yard','Est. on hand','Days of cover','Status'],[
+       ['Decomposed granite (sample color)','Glendale','≈ 60 tons','3',pl('Low','warn')],
+       ['3/4″ decorative rock (sample)','Phoenix','≈ 140 tons','9',pl('OK')],
+       ['Rip rap (sample size)','Phoenix','≈ 35 tons','4',pl('Low','warn')],
+       ['Paver sand (bagged)','Both','≈ 80 bags','6',pl('Watch','blue')]])+
+     C('Suggestion: move one transfer load of decomposed granite to Glendale before Thursday\'s landscaper orders.');}},
+
+  {cat:"yard", icon:"📆", title:"Seasonal demand planning",
+   benefit:"A month-by-month view of what sells when, so you produce and stock ahead of the rush.",
+   tag:"2–3 hrs per quarter",
+   how:["Reads your past sales by product and month (from invoices or your sheet).","Builds a simple demand calendar and highlights the busiest months by product.","Updates it each quarter as new data comes in."],
+   doc:function(){return H('Demand calendar · sample pattern','Built from your own sales history in the real version')+
+     T(['Product group','Spring','Summer','Fall','Winter'],[['Decorative rock','High','Medium','High','Medium'],['Decomposed granite','High','Low','High','Medium'],['Rip rap / drainage','Medium','High (pre-monsoon)','Low','Low'],['Fill dirt / top soil','High','Medium','High','Medium']])+
+     C('Example takeaway: build drainage-rock stock in late spring, before monsoon season.',true)+
+     D('Sample pattern for illustration, not a statement about any real sales.');}},
+
+  {cat:"yard", icon:"📄", title:"Product spec sheets",
+   benefit:"One-page spec sheets for each product: size, color, typical uses, coverage, and handling notes.",
+   tag:"~30 min per product",
+   how:["Starts from your product list and website descriptions.","Fills a consistent template for each product.","You approve, then share as PDFs with contractors or at the counter."],
+   doc:function(){return H('Spec sheet: 1/2″ minus decomposed granite (sample)',CO()+' · product information sheet')+
+     T(['Spec','Detail'],[['Size','1/2″ minus (fines included)'],['Color','Sample: warm gold'],['Common uses','Pathways, xeriscape ground cover, between pavers'],['Coverage (example)','≈ 1 ton covers ~115 sq ft at 2″'],['Tip','Water and compact in layers for a firm surface']])+
+     D('Coverage is an example factor for illustration. The real sheet uses your numbers.');}},
+
+  {cat:"yard", icon:"📢", title:"New product announcements",
+   benefit:"Email, social, and counter-sign drafts the day a new rock color or product arrives.",
+   tag:"~2 hrs per launch",
+   how:["You tell it the product name, size, and a few notes (plus your own photos).","Drafts an email to landscapers, a social caption, and a counter sign.","Everything waits for your approval."],
+   doc:function(){return DRAFT+H('Launch kit: new 1″ slate-gray rock (sample product)')+
+     B('Email subject')+P('New at the yard: a cool slate-gray rock for modern desert yards')+
+     B('Social caption')+P('Meet our newest stone. 🪨 Cool gray tones that pair with black trim and modern homes. Come see it in person at the yard. #PhoenixLandscaping #DesertLandscape')+
+     B('Counter sign')+P('NEW · 1″ slate-gray (sample) · Great for modern front yards · Ask us for a coverage estimate');}},
+
+  {cat:"yard", icon:"🏷️", title:"Internal price list update memos",
+   benefit:"When the price sheet changes, a clear internal memo and a checklist of every place that needs updating.",
+   tag:"~1 hr per update",
+   how:["You share the updated price sheet.","Lists which products changed and the effective date.","Builds a checklist: website shop, counter sheet, quote templates, and contractor notices."],
+   doc:function(){return H('Internal memo: price sheet update (sample)','For staff only · effective the 1st of next month')+
+     T(['Product group','Items changed','Effective'],[['Decorative rock','8','1st of month'],['Bagged materials','5','1st of month'],['Delivery zones','2','1st of month']])+
+     B('Update checklist')+L(['Online shop product pages','Counter price sheet (both yards)','Quote reply templates','Contractor account notice (draft ready)'],true)+
+     C('The memo lists items only. Figures come from your updated sheet.',true);}},
+
+  {cat:"yard", icon:"🪧", title:"Bin labels & counter display copy",
+   benefit:"Consistent, helpful signs for every bin and display: name, size, best uses, and a coverage tip.",
+   tag:"~3 hrs per refresh",
+   how:["Reads your product list and spec sheets.","Drafts short sign copy in a consistent format.","Creates a print-ready document for the yard."],
+   doc:function(){return H('Bin label drafts (sample)','Print-ready · one per bin')+
+     T(['Product','Size','Best for','Tip'],[['Desert-tone rock (sample)','3/4″','Front yards, hides dust','~3″ deep for full cover'],['River rock (sample)','1–3″','Dry creek beds, borders','Layer bigger stones on edges'],['Gray granite (sample)','1/2″','Modern yards, paths','Pairs with dark trim']]);}},
+
+  {cat:"yard", icon:"⛏️", title:"Production log summaries",
+   benefit:"A weekly summary of what was mined, screened, and stockpiled, from your operators' notes.",
+   tag:"~1–2 hrs per week",
+   how:["Reads operator logs, shift notes, or a shared production sheet.","Totals output by product and compares it to demand.","Highlights downtime and products falling behind."],
+   doc:function(){return H('Production summary · last week','Sample figures for illustration')+
+     T(['Product','Produced (tons)','Sold (tons)','Net'],[['Decomposed granite','≈ 900','≈ 1,050','−150 ⚠️'],['Screened rock','≈ 1,200','≈ 980','+220'],['Fill dirt','≈ 1,600','≈ 1,400','+200']])+
+     C('Screen downtime: 6 hrs Tuesday (belt repair). Decomposed granite is selling faster than it is produced; consider an extra shift next week.');}},
+
+  {cat:"yard", icon:"🧱", title:"Pavers & hardgoods reorder lists",
+   benefit:"Tracks bought-in items like pavers, rebar, tools, and bagged goods, and drafts vendor reorders.",
+   tag:"~1 hr per week",
+   how:["Reads your counts and recent sales of bought-in items.","Builds a reorder list grouped by vendor.","Drafts the order emails; you confirm quantities and send."],
+   doc:function(){return H('Reorder list · this week','Sample vendors and items')+
+     T(['Vendor (fictional)','Item','On hand','Suggested'],[['Sunline Pavers','Paver, tan blend','≈ 2 pallets','4 pallets'],['Valley Steel Supply','Rebar #4, 20 ft','≈ 60 pcs','200 pcs'],['Bag Co. Southwest','Paver sand bags','≈ 80','240'],['Toolhouse Dist.','Steel rakes','6','12']])+
+     E({to:'Sunline Pavers (fictional)',subj:'Reorder: tan blend pavers',body:['Hi team, please quote 4 pallets of the tan blend for delivery to our Phoenix yard next week. Same as last order.']});}},
+
+  {cat:"yard", icon:"🪣", title:"Bagged & bucket sell-through tracker",
+   benefit:"See which bagged materials and pre-filled buckets move fastest, so shelves and displays stay full.",
+   tag:"~1 hr per month",
+   how:["Reads retail sales from your register exports or sheet.","Ranks bagged and bucket products by sales and days of stock.","Suggests what to fill, move, or feature."],
+   doc:function(){return H('Bagged & bucket sell-through · last 30 days','Sample data')+
+     T(['Product','Units sold','Days of stock','Action'],[['Paver sand, bag','≈ 310','8','Fill'],['Pre-filled bucket, river rock','≈ 95','21','OK'],['Pre-filled bucket, gold DG','≈ 120','6','Fill'],['Polymeric sand','≈ 40','45','Feature at counter']]);}},
+  /* ================= CONTRACTOR & COMMERCIAL ACCOUNTS ================= */
+  {cat:"accts", icon:"📦", title:"Account onboarding packets",
+   benefit:"A welcome email and checklist for every new contractor or landscaper account.",
+   tag:"~1 hr per account",
+   how:["Triggered when you tag a new account in your inbox or sheet.","Drafts a welcome email with your forms, yard hours, and how to order.","Tracks which onboarding items are still missing."],
+   doc:function(){return E({to:'Ocotillo Outdoor (sample new account)',subj:'Welcome to '+CO()+': getting your account set up',body:['Hi Andre, welcome aboard! To finish setting up your account, here is what we still need:','1. Credit application (attached)<br>2. Tax exemption certificate, if it applies<br>3. Names of people allowed to order on your account<br>4. Your usual delivery areas and best drop times','Our yards are open Mon–Fri 5 AM–4:30 PM and Sat 6 AM–12 PM. Reply anytime to place an order.']})+
+     T(['Onboarding item','Status'],[['Credit application',pl('Missing','warn')],['Tax certificate',pl('Received')],['Authorized buyers',pl('Missing','warn')]]);}},
+
+  {cat:"accts", icon:"🧾", title:"Monthly statement summaries",
+   benefit:"A plain-English summary for each account: loads, tons by product, jobs, and open items.",
+   tag:"~3 hrs per month",
+   how:["Runs at month end as a scheduled routine.","Pulls from invoices and delivery tickets.","Drafts a summary email to go with each statement; you approve and send."],
+   doc:function(){return H('Statement summary · Desert Edge Landscaping (sample)','Last month · sample figures')+
+     T(['Product','Loads','Tons'],[['Decorative rock','14','≈ 136'],['Decomposed granite','9','≈ 82'],['Boulders','3','≈ 18'],{t:['Total','26','≈ 236']}])+
+     L(['Top job sites: Surprise (11 loads), Peoria (8 loads).','Open invoices: 2 (details on the attached statement).'])+
+     C('A short "thanks for a busy month" note is drafted to go with the statement.',true);}},
+
+  {cat:"accts", icon:"🤝", title:"Volume customer check-ins",
+   benefit:"Quarterly, personal check-ins with your top landscapers and contractors before they drift to someone else.",
+   tag:"~2 hrs per quarter",
+   how:["Ranks accounts by volume from your order history.","Notes changes, like an account that's ordering less than usual.","Drafts a personal check-in for each one; you send what you like."],
+   doc:function(){return H('Quarterly check-ins','Top accounts · sample')+
+     T(['Account','Trend','Note'],[['Desert Edge Landscaping','Steady',pl('Thank-you')],['Cactus Wren Builders','Up',pl('New project?','blue')],['Palo Verde Pools','Down',pl('Check in','warn')]])+
+     E({to:'Palo Verde Pools (sample)',subj:'Checking in',body:["Hi Rosa, we noticed fewer orders from your crews this quarter and wanted to check in. Is there anything we could do better on delivery times or materials? We'd love to keep supporting your jobs."]});}},
+
+  {cat:"accts", icon:"🏛️", title:"Public bid & RFP research",
+   benefit:"Finds public projects (cities, counties, school districts) that need aggregates, and summarizes what they require.",
+   tag:"2–3 hrs per week",
+   how:["A weekly routine searches public bid boards and procurement pages.","Filters for material supply, landscaping, and site-work projects near your yards.","Summarizes requirements and deadlines; you decide which to chase."],
+   doc:function(){return H('Open bids this week','Fictional examples · '+CITY())+
+     T(['Opportunity','Agency type','Due','Fit'],[['Park landscape rock replacement','City','Dec 4',pl('Strong')],['Road shoulder aggregate supply','County','Dec 11',pl('Maybe','blue')],['School campus xeriscape refresh','School district','Jan 9',pl('Strong')],['Drainage channel rip rap','Flood control','Jan 15',pl('Maybe','blue')]])+
+     B('Park rock replacement: key requirements')+L(['Material samples with the bid.','Delivery to 6 sites over 4 weeks.','Pre-bid meeting date added to your calendar as tentative.'])+
+     D('Research summary only. Read each bid document for the actual requirements.');}},
+
+  {cat:"accts", icon:"📝", title:"Credit application follow-ups",
+   benefit:"Tracks pending credit applications and drafts polite reminders for missing pieces.",
+   tag:"~1 hr per week",
+   how:["Tracks applications sent and received from your inbox or sheet.","Lists what is missing on each.","Drafts a reminder email every few days until it's complete."],
+   doc:function(){return H('Pending credit applications','Sample accounts')+
+     T(['Account','Sent','Missing'],[['Ocotillo Outdoor','6 days ago','Trade references'],['Sonoran Site Works (fictional)','3 days ago','Signature page'],['Mesa Grande Pools (fictional)','10 days ago','Entire form']])+
+     E({to:'Sonoran Site Works (sample)',subj:'One quick item on your credit application',body:['Hi Kim, thanks for sending your application. We just need the signed last page to finish it up. Once that is in, we can set up account ordering right away.']});}},
+
+  {cat:"accts", icon:"🚧", title:"Big-job material tracker",
+   benefit:"Planned vs. delivered tons for each large contractor job, so nothing comes up short at the end.",
+   tag:"~1 hr per week",
+   how:["Starts from the takeoff or contractor's order list.","Updates delivered tons from tickets as they come in.","Flags jobs nearing their planned totals and drafts a check-in."],
+   doc:function(){return H('Active big jobs','Sample projects')+
+     T(['Job','Planned tons','Delivered','Progress'],[['Mesa Vista retail pad','≈ 823','≈ 520','63%'],['Saguaro Ridge HOA','≈ 140','≈ 128','91% ⚠️'],['Laveen subdivision entry','≈ 300','≈ 90','30%']])+
+     C('Saguaro Ridge is at 91% with one area left. A note asking whether to plan one more load is drafted.');}},
+
+  {cat:"accts", icon:"📣", title:"Contractor-only updates",
+   benefit:"A short monthly email for account customers: availability, new products, holiday hours, and schedule tips.",
+   tag:"~2 hrs per month",
+   how:["Gathers notes from you, your stock watch list, and the calendar.","Drafts a scannable update for your contractor list.","You approve and send from your email tool."],
+   doc:function(){return DRAFT+H('Pro update · next month (sample)','For landscapers and contractors')+
+     L(['🪨 Stock: decomposed granite is moving fast. Order 2–3 days ahead for early drops.','🆕 New at the yard: a slate-gray 1″ rock (sample product).','🗓️ Holiday hours: check our posted schedule before ordering for the holiday week.','🌡️ Heat tip: book 6 AM delivery windows during heat warnings.']);}},
+
+  {cat:"accts", icon:"🔎", title:"New account research briefings",
+   benefit:"A one-page brief on a builder or landscaper before your first meeting, from public info.",
+   tag:"~1 hr per prospect",
+   how:["Triggered by a meeting on your calendar with a new company.","Researches their website, public projects, and reviews.","Arrives the evening before, with questions to ask."],
+   doc:function(){return H('Briefing: Sonoran Site Works (fictional)','Meeting tomorrow 7:30 AM · sample company')+
+     B('Snapshot')+L(['Commercial site-work contractor; website lists retail and multifamily projects.','Recent public permits suggest 2 new projects in the West Valley.','Reviews mention fast turnaround; likely values on-time deliveries.'])+
+     B('Questions to ask')+L(['Which materials do you buy most, and from where?','What delivery windows work best on your sites?','Who places orders day to day?'],true);}},
+
+  {cat:"accts", icon:"📜", title:"Document & certificate requests",
+   benefit:"Fast replies when a contractor needs a spec sheet, W-9, certificate of insurance, or material info.",
+   tag:"~15 min per request",
+   how:["Recognizes document requests in your inbox.","Finds the right file in your shared folder.","Drafts the reply with the attachment for you to check and send."],
+   doc:function(){return E({to:'Cactus Wren Builders (sample)',subj:'Re: docs for the Mesa Vista submittal',body:['Hi Tom, attached are the items you asked for:','• Spec sheet: aggregate base (sample)<br>• Spec sheet: rip rap (sample)<br>• W-9','Our certificate of insurance request has gone to our agent; we will forward it as soon as it arrives.'],note:'Attachments found in your shared "Contractor Docs" folder. The insurance certificate needs your agent.'});}},
+  /* ================= CUSTOMER EXPERIENCE ================= */
+  {cat:"cx", icon:"❓", title:"\"How much do I need?\" answers",
+   benefit:"Clear, friendly answers to the most common question, with the math and a link to your online calculators.",
+   tag:"~10 min per question",
+   how:["Spots coverage questions in your inbox, website messages, and social DMs.","Works out cubic yards and tons with your own factors.","Drafts the reply with a link to your bulk material calculator."],
+   doc:function(){return E({to:'K. Nguyen (sample)',subj:'Re: how much decomposed granite?',body:['Hi Kevin, for a 20 × 30 ft area (600 sq ft) at 2 inches deep, you need about 3.7 cubic yards, which is roughly 5 tons of decomposed granite.','We usually suggest a little extra for compacting and low spots, so 5.5–6 tons is a safe order. You can also double-check with the bulk material calculator on our website.']});}},
+
+  {cat:"cx", icon:"📐", title:"Coverage guides",
+   benefit:"A printable, easy-to-read coverage chart by material and depth for the counter, website, and emails.",
+   tag:"~2 hrs per guide",
+   how:["Uses your own material weights and recommended depths.","Builds a clean chart homeowners can understand.","Exports a print-ready version and a website version."],
+   doc:function(){return H('How far does a ton go? (sample guide)','Approximate coverage per ton')+
+     T(['Material','At 2″','At 3″','Typical use'],[['Decomposed granite','~115 sq ft','~77 sq ft','Paths, patios'],['3/4″ decorative rock','~115 sq ft','~77 sq ft','Ground cover'],['River rock','—','~77 sq ft','Borders, creek beds']])+
+     D('Example factors for illustration (about 1.4 tons per cubic yard). The real guide uses your numbers.');}},
+
+  {cat:"cx", icon:"🎨", title:"Rock & color selection guides",
+   benefit:"Helps homeowners choose: rock colors and sizes by home style, plus AI concept sketches of the look.",
+   tag:"~1 hr per customer",
+   how:["You describe the home (or the customer shares a photo of the yard, no people).","Suggests combinations from your product list and creates concept sketches.","You choose what, if anything, to send the customer."],
+   doc:function(){return H('Color ideas for a stucco home with a tile roof (sample)','Illustrative concept sketches, not exact colors')+
+     '<div class="concepts"><figure>'+concept('front')+'<figcaption>A · Warm desert-tone rock + boulders + gold path</figcaption></figure><figure>'+concept('modern')+'<figcaption>B · Gray granite + black-trim modern look</figcaption></figure></div>'+
+     L(['Tip: warm browns hide dust and match tan stucco.','Visit either yard to see stones in person before deciding.'])+
+     D('Concept images are AI-generated for discussion and do not show exact colors or products.');}},
+
+  {cat:"cx", icon:"⭐", title:"Review request drafts",
+   benefit:"A short, well-timed thank-you after each delivery that makes it easy to leave a Google review.",
+   tag:"~2 hrs per week",
+   how:["Watches for completed deliveries and pickups.","Drafts a thank-you with your review link, timed for the next morning.","Skips anyone with an open issue."],
+   doc:function(){return SMS('L. Chen (sample customer)',['Hi Lily, thanks for choosing '+CO()+'! We hope the river rock looks great. If you have a minute, a quick Google review helps a family business like ours a lot: [your review link]'],'Customers with open complaints are skipped automatically.');}},
+
+  {cat:"cx", icon:"🗨️", title:"Review reply drafts",
+   benefit:"Warm, specific replies to every Google review, good or bad, in your voice.",
+   tag:"~1 hr per week",
+   how:["Checks for new reviews on a schedule.","Drafts a personal reply that mentions what the customer said.","For negative reviews, drafts a calm reply and an internal note first."],
+   doc:function(){return H('New reviews · this week','Sample reviews')+
+     B('★★★★★ "Driver placed the rock exactly where we asked."')+P(DRAFT+'<br>Thank you, Mark! Our drivers take pride in a careful drop. Enjoy the new yard, and we\'ll see you for the next project.')+
+     B('★★☆☆☆ "Delivery was two hours late."')+P(DRAFT+'<br>Hi Jen, we\'re sorry about the wait and appreciate your patience. That isn\'t the experience we want. Please call the office so we can make it right.');}},
+
+  {cat:"cx", icon:"🛟", title:"Complaint reply drafts",
+   benefit:"Calm, fair first replies to problems like the wrong color, a short load, or a mark on a driveway.",
+   tag:"~30 min per issue",
+   how:["Flags upset messages in your inbox, DMs, and reviews.","Summarizes the issue with the order and ticket details.","Drafts a reply and a suggested fix for you to approve."],
+   doc:function(){return H('Issue summary (sample)','Order #10490 · delivered yesterday')+
+     L(['Customer says: "This looks lighter than the sample I picked."','Ticket shows the correct product; color can look lighter when dry and dusty.'])+
+     E({to:'A. Brooks (sample)',subj:'About your rock color',body:["Hi Alex, thanks for letting us know. Rock often looks lighter when it's dry and dusty. A quick rinse usually brings out the true color. If it still doesn't match what you picked, send us a photo and we'll come take a look."]});}},
+
+  {cat:"cx", icon:"🕐", title:"Hours, yards & pickup answers",
+   benefit:"Instant drafts for everyday questions: hours, which yard, pickup process, and what to bring.",
+   tag:"~1 hr per week",
+   how:["Uses your public hours, yard locations, and pickup rules.","Drafts replies to inbox, website, and social questions.","You approve, or keep it as a saved FAQ."],
+   doc:function(){return H('Quick answers (sample drafts)','From your public info')+
+     T(['Question','Draft answer'],[['"Are you open Saturday?"','Yes, Saturdays 6 AM to noon. Weekdays 5 AM to 4:30 PM.'],['"Which yard is closer to Peoria?"','Our Glendale yard is usually the easier trip from Peoria.'],['"Can I pick up with my truck?"','Yes! Tell us your truck or trailer size and we\'ll help you pick a safe load.']]);}},
+
+  {cat:"cx", icon:"🛻", title:"Pickup customer prep guide",
+   benefit:"A short guide for yard pickup customers: truck and trailer capacity, tarps, and what to expect at the yard.",
+   tag:"~15 min per customer",
+   how:["Built from your yard pickup rules.","Attached to pickup confirmations and shared at the counter.","Updated whenever your process changes."],
+   doc:function(){return H('Picking up at our yard (sample guide)',CO()+' · retail pickup')+
+     L(['Know your vehicle: check your truck or trailer payload rating before you come.','A half-ton pickup usually carries much less than people expect. Ask us before loading.','Bring a tarp to cover the load for the drive home.','Pay and check in at the counter, then pull forward for loading.'],true)+
+     D('General guidance. Your vehicle manufacturer\'s ratings come first.');}},
+
+  {cat:"cx", icon:"🧑‍🏫", title:"DIY install guides",
+   benefit:"Step-by-step guides sent after purchase: installing decomposed granite, laying weed barrier, building a dry creek bed.",
+   tag:"~2 hrs per guide",
+   how:["Writes clear guides from your team's know-how.","Attaches the right guide to each order confirmation.","Creates printable versions for the counter."],
+   doc:function(){return H('How to install decomposed granite (sample guide)','Sent with decomposed granite orders')+
+     L(['Clear and level the area; remove roots and loose soil.','Lay weed barrier, overlapping seams a few inches.','Spread about 1 inch at a time.','Lightly water and compact each layer.','Repeat to your final depth, then let it set.'],true)+
+     C('Tip: a stabilizer helps paths stay firm through monsoon season.',true);}},
+
+  {cat:"cx", icon:"📬", title:"Post-delivery check-ins",
+   benefit:"A friendly \"how did it go?\" a few days after delivery, with care tips and an easy way to reorder.",
+   tag:"~1 hr per week",
+   how:["Runs a few days after each delivery.","Drafts a check-in with tips for the product they bought.","Flags replies that mention a problem."],
+   doc:function(){return E({to:'M. Rivera (sample)',subj:'How is the new decomposed granite settling in?',body:['Hi Maria, hope the project is coming along! A quick tip: a light watering and a pass with a roller helps the granite settle firmly. If you came up a little short, reply here and we can add a small load to an upcoming run.']});}},
+  /* ================= SOCIAL MEDIA ================= */
+  {cat:"social", icon:"🗓️", title:"Monthly social content calendar",
+   benefit:"A month of post ideas across Facebook, Instagram, TikTok, YouTube Shorts, Google, and LinkedIn.",
+   tag:"4–6 hrs per month",
+   how:["A monthly routine plans posts around the season, your products, and recent deliveries.","Matches each idea to the right platform (LinkedIn for contractors, Instagram for homeowners).","Every post is a draft. You approve and publish; nothing is ever posted on its own."],
+   doc:function(){return H('Content calendar · next month','Sample plan · 3–4 posts per week')+
+     T(['Week','Facebook / Instagram','TikTok / Shorts','Google profile','LinkedIn'],[
+       ['1','Rock of the week','Loader filling a truck (ASMR)','Fall yard prep tip','Contractor scheduling tip'],
+       ['2','Customer project spotlight','"How much rock is 10 tons?"','New product post','Big-job delivery recap'],
+       ['3','Before/after front yard','Screening plant in action','Hours reminder','Hiring: drivers'],
+       ['4','Review highlight','Dry creek bed in 30 sec','Calculator how-to','Family-owned since 1974 story']]);}},
+
+  {cat:"social", icon:"🪨", title:"Rock of the week series",
+   benefit:"A recurring post featuring one product: color, size, best uses, and how much you need.",
+   tag:"~1 hr per week",
+   how:["Picks a product each week, rotating through your catalog.","Drafts a caption with uses, a coverage tip, and a call to visit the yard.","You add your own photo and post."],
+   doc:function(){return DRAFT+H('Rock of the Week · desert-tone 3/4″ (sample)','Instagram + Facebook caption')+
+     P('🪨 ROCK OF THE WEEK 🪨 Warm browns and tans that hide dust and blend right into the desert. Great for front yards, side yards, and low-water landscapes. About 1 ton covers ~77 sq ft at 3″ deep. Come see it at the yard! #RockOfTheWeek #PhoenixLandscaping #DesertLandscaping #Xeriscape');}},
+
+  {cat:"social", icon:"🏡", title:"Customer project spotlights",
+   benefit:"Turns customer and landscaper project photos into spotlight posts, with their permission.",
+   tag:"~1 hr per post",
+   how:["Drafts a permission request when a customer shares project photos (yards only, no people).","Writes the caption with the products used.","Tags the landscaper when they're a partner and agree to it."],
+   doc:function(){return B('Permission request')+E({to:'Desert Edge Landscaping (sample)',subj:'Could we feature your Surprise project?',sign:false,body:['Hi Andre, that front yard looks fantastic. Would you be OK with us posting your photos and tagging your business?']})+
+     B('Caption draft')+P('Project spotlight ✨ Desert Edge Landscaping (sample) transformed this Surprise front yard with decorative rock, gold decomposed granite paths, and a few statement boulders. Materials from our yard. #ProjectSpotlight #ArizonaLandscaping');}},
+
+  {cat:"social", icon:"↔️", title:"Before/after captions",
+   benefit:"Caption drafts for before/after yard photos that show what the right rock can do.",
+   tag:"~1 hr per week",
+   how:["You drop in a few notes and your own before/after photos.","Drafts captions for each platform, with hashtags.","Never posts on its own; you edit and publish."],
+   doc:function(){return H('3 caption drafts','Text only · pair with your own photos')+
+     B('1. Dirt to done')+P('From dusty dirt lot to a clean, low-water front yard. 🌵 Decomposed granite, desert-tone rock, and two boulders did all the work. Swipe for the before.')+
+     B('2. Dry creek bed')+P('A dry creek bed that looks good all year AND handles monsoon runoff. River rock + boulders. 🌧️')+
+     B('3. Quick one')+P('Fresh rock = fresh curb appeal. That\'s it. That\'s the post. 🪨');}},
+
+  {cat:"social", icon:"🎬", title:"Reels & TikTok scripts",
+   benefit:"Scripts and on-screen text for loader pours, screening, deliveries, and yard tours. No faces needed.",
+   tag:"~1 hr per video",
+   how:["You share what you filmed or plan to film.","Drafts a 3-second hook, on-screen text, and a call to action.","Suggests trending formats; you film, edit, and post."],
+   doc:function(){return H('Script: "What does 10 tons of rock look like?"','Sample script · machines and material only')+
+     T(['Time','On screen','Text overlay'],[['0–3s','Loader bucket pouring rock','"What does 10 tons of rock actually look like?"'],['3–10s','Truck bed filling up','"Spoiler: less than you think"'],['10–20s','Dump at a driveway','"…and it covers about 770 sq ft at 3 inches"'],['20–25s','Finished yard','"Not sure how much you need? Ask us."']])+
+     P('<strong>Caption:</strong> The most satisfying sound in the Valley. 🪨🔊 #RockDelivery #Satisfying #PhoenixAZ');}},
+
+  {cat:"social", icon:"☀️", title:"Summer, monsoon & seasonal tips",
+   benefit:"Helpful, timely posts for desert seasons: heat, monsoon runoff, fall planting, and spring yard refreshes.",
+   tag:"~1 hr per week",
+   how:["A weekly routine picks a tip that fits the season and forecast.","Drafts short versions for each platform.","You approve and post; it reminds you if the week is empty."],
+   doc:function(){return H('Tip posts · next 2 weeks','Drafts · text only')+
+     L(['🌧️ Monsoon prep: rip rap and river rock in low spots slow runoff and stop erosion.','☀️ Summer projects? Schedule deliveries early in the morning, before the heat.','🌵 Fall is a great time to refresh rock before winter visitors arrive.','🧱 Decomposed granite paths get firmer with water and compaction. Monsoon rain helps!']);}},
+
+  {cat:"social", icon:"#️⃣", title:"Hashtag sets",
+   benefit:"Local and niche hashtags that reach Valley homeowners, landscapers, and builders.",
+   tag:"~2 hrs per quarter",
+   how:["Researches hashtags and location tags used locally.","Groups them into sets by audience and product.","Refreshes quarterly so tags stay current."],
+   doc:function(){return H('Hashtag sets · '+CITY(),'Research summary · sample')+
+     T(['Set','Use for','Tags'],[['Local','Every post','#PhoenixAZ #Glendale #ArizonaLiving'],['Homeowner','Yard posts','#DesertLandscaping #Xeriscape #CurbAppeal'],['Pro','Contractor posts','#Hardscape #SiteWork #LandscapeSupply'],['Product','Rock posts','#DecomposedGranite #RiverRock #Boulders']])+
+     C('Tip: 3–5 targeted tags beat 30 generic ones. Add a location tag.',true);}},
+
+  {cat:"social", icon:"📍", title:"Google Business Profile posts",
+   benefit:"Weekly posts for both yard profiles: products, tips, and updates that help you show up in local search.",
+   tag:"~1 hr per week",
+   how:["Drafts one post per yard each week.","Mixes product, tip, and update posts with a clear call to action.","You review and publish from your Google profile."],
+   doc:function(){return DRAFT+H('Google post · Glendale yard (sample)')+
+     P('Planning a front yard refresh? 🌵 Stop by our Glendale yard to see decorative rock, decomposed granite, and boulders in person. Not sure how much you need? Try the material calculator on our website or ask at the counter.')+
+     P('<strong>Button:</strong> Get a quote');}},
+
+  {cat:"social", icon:"💌", title:"Comment & DM reply drafts",
+   benefit:"Quick, friendly replies to comments and messages, like \"how much for 5 tons delivered to Mesa?\"",
+   tag:"~1 hr per week",
+   how:["Gathers new comments and DMs you share or that arrive by email notification.","Drafts replies that answer the question and point to the quote form.","You post the replies yourself."],
+   doc:function(){return T(['Comment','Draft reply'],[['"What color is this rock?"','That\'s our desert-tone 3/4″ (sample name). Come see it at either yard! 🪨'],['"Do you deliver to Mesa?"','We deliver across the Valley! Send us your address through our quote form and we\'ll get you a quote.'],['"How much do I need for 400 sq ft?"','At 2″ deep, about 3.5 tons. DM us your measurements and we\'ll double-check.']]);}},
+
+  {cat:"social", icon:"🌟", title:"Review-to-post graphics",
+   benefit:"Turns your best Google reviews into clean quote graphics and captions.",
+   tag:"~1 hr per week",
+   how:["Picks recent 5-star reviews (first name or initials only).","Creates a simple branded quote graphic and caption.","You approve before anything is shared."],
+   doc:function(){return '<div class="slides"><div class="slide dark"><small>★★★★★</small><b>"Great selection, friendly yard crew, and delivery right on time."</b><small>— Sample review · '+CO()+'</small></div><div class="slide"><b>Caption draft</b><small>Thank you for the kind words! 🙏 Reviews like this keep our family business going.</small></div></div>'+
+     D('Sample review text for illustration only.');}},
+
+  {cat:"social", icon:"✨", title:"AI graphic concepts",
+   benefit:"Concept graphics for promos, product posts, and seasonal announcements. Rock, yards, and trucks only, no people.",
+   tag:"~1 hr per graphic",
+   how:["You describe the post; it generates a few concept graphics.","Uses your colors and logo placement notes.","You choose what to use; nothing is posted automatically."],
+   doc:function(){return H('Graphic concepts · "Monsoon-ready yards" (sample)')+
+     '<div class="concepts"><figure>'+concept('creek')+'<figcaption>A · Dry creek bed with river rock</figcaption></figure><figure>'+concept('piles')+'<figcaption>B · "Stock up" product piles</figcaption></figure></div>'+
+     D('AI-generated concept art for discussion. Not photos of real products.');}},
+
+  {cat:"social", icon:"🏘️", title:"Nextdoor neighborhood posts",
+   benefit:"Friendly, helpful posts for neighborhoods near your yards and recent deliveries.",
+   tag:"~1 hr per week",
+   how:["Picks neighborhoods where you're already delivering this week.","Drafts posts in a neighborly tone.","You post from your business page."],
+   doc:function(){return DRAFT+H('Nextdoor post (sample neighborhood)')+
+     P('Hi neighbors! 👋 We\'re a family-owned sand and rock yard here in the Valley. If you\'re planning a yard refresh, we\'re happy to help you figure out how much rock or decomposed granite you need. No pressure, just ask!');}},
+
+  {cat:"social", icon:"💼", title:"LinkedIn posts for contractors & builders",
+   benefit:"Professional posts that keep you top of mind with builders, site-work contractors, and property managers.",
+   tag:"~1 hr per post",
+   how:["Drafts posts about big deliveries, scheduling tips, and your team.","Keeps the tone professional and specific.","You publish from your company page."],
+   doc:function(){return DRAFT+H('LinkedIn post (sample)')+
+     P('Supplying a retail pad in the West Valley this month: fill dirt, aggregate base, and rip rap, phased to match the contractor\'s schedule. (Sample project.)')+
+     P('Tip for site supers: book early-morning delivery windows during summer heat warnings. Our trucks run 5 to 24 tons, so we can size loads to your site.');}},
+
+  {cat:"social", icon:"🏭", title:"Behind-the-scenes: mined & made here",
+   benefit:"A series showing how you mine, screen, and stockpile your own material. Machines and material, no faces.",
+   tag:"~1 hr per post",
+   how:["Plans a short series from pit to delivery.","Drafts captions and video ideas for each step.","You film and post what you're comfortable sharing."],
+   doc:function(){return H('Series plan: "From our pit to your yard"','4 posts · sample')+
+     L(['Post 1 · Where it starts: the pit (wide shot, equipment only).','Post 2 · Screening: how sizes get separated.','Post 3 · Stockpiles: why colors and sizes stay sorted.','Post 4 · Delivery: from the loader to the driveway.'],true)+
+     P('<strong>Caption idea:</strong> We mine and process our own sand, gravel, and decorative rock. Here\'s how it gets from the ground to your yard.');}},
+
+  {cat:"social", icon:"📉", title:"Weekly engagement report",
+   benefit:"Which posts brought in calls, quotes, and followers, in one simple summary.",
+   tag:"~1 hr per week",
+   how:["Reads the analytics exports or email reports from your platforms.","Summarizes what worked and what didn't.","Suggests next week's focus."],
+   doc:function(){return H('Social summary · last week','Sample figures')+
+     KPI([['Posts','6',''],['Reach','8,400','+18%'],['Quote clicks','23','+6'],['New followers','41',''],['DMs','12',''],['Best post','Rock pour video','']])+
+     C('Videos of rock being poured beat photos 3 to 1. Plan 2 more for next week.',true);}},
+
+  {cat:"social", icon:"⏰", title:"Posting reminders routine",
+   benefit:"A gentle nudge when drafts are waiting or a platform has gone quiet.",
+   tag:"~30 min per week",
+   how:["Checks your content calendar each morning.","Reminds you which approved drafts are ready to post.","Flags platforms with no post in 7+ days."],
+   doc:function(){return SMS('You (owner)',['Morning! 3 drafts are ready to post today: Rock of the Week (Instagram), monsoon tip (Facebook), Glendale yard Google post. LinkedIn has been quiet for 9 days. Want a draft?'],'Reminders only. Nothing posts on its own.');}},
+  /* ================= MARKETING ================= */
+  {cat:"mkt", icon:"📰", title:"Landscaper email newsletter",
+   benefit:"A monthly newsletter for landscapers and contractors: stock updates, new products, and scheduling tips.",
+   tag:"~3 hrs per month",
+   how:["Gathers notes from your stock list, calendar, and recent posts.","Drafts a short, skimmable newsletter.","You approve and send from your email tool."],
+   doc:function(){return DRAFT+H('The Yard Report · sample issue','For landscapers and contractors')+
+     L(['🪨 Featured: three rock colors pros are using in modern front yards.','📦 Stock notes: what to order early this month.','🗓️ Scheduling: how to get first-run 5 AM loads.','🧮 Reminder: our online calculators for bulk material and pavers.']);}},
+
+  {cat:"mkt", icon:"🏷️", title:"Seasonal promo copy",
+   benefit:"Campaign copy for spring refresh, monsoon prep, and fall projects, for email, web, and social.",
+   tag:"~2 hrs per campaign",
+   how:["You pick the season and the products to feature.","Drafts headline options, email copy, web banner text, and posts.","You set any offer details; it never invents deals."],
+   doc:function(){return H('Campaign: "Monsoon-Ready Yards" (sample)','Copy drafts · no offer details included')+
+     T(['Piece','Draft'],[['Headline','Get your yard ready before the storms roll in'],['Email subject','Rip rap, river rock, and drainage ideas for monsoon season'],['Web banner','Monsoon-ready rock for every yard · Get a quote'],['Social','Low spot turns into a pond every July? Let\'s fix that. 🌧️🪨']]);}},
+
+  {cat:"mkt", icon:"🖥️", title:"Website product copy",
+   benefit:"Clear, consistent descriptions for product pages: sizes, colors, uses, and how much to order.",
+   tag:"~30 min per product",
+   how:["Reads your current product pages and spec sheets.","Drafts improved descriptions with helpful details and keywords.","You review and paste them into your website."],
+   doc:function(){return DRAFT+H('Product page draft: River rock, 1–3″ (sample)')+
+     P('Smooth, rounded river rock in natural earth tones. A favorite for dry creek beds, borders, and drainage areas that need to look good and handle runoff.')+
+     L(['Best for: dry creek beds, borders, around downspouts','Coverage (example): about 77 sq ft per ton at 3″','Pair with: weed barrier and a few accent boulders'])+
+     D('Coverage is an example factor. Your page would use your numbers.');}},
+
+  {cat:"mkt", icon:"✍️", title:"SEO blog drafts",
+   benefit:"Helpful local articles like \"Decomposed granite vs. gravel in Phoenix\" that bring in search traffic.",
+   tag:"~3 hrs per post",
+   how:["Researches what local customers search for.","Drafts a practical, plain-English article with a clear call to action.","You edit and publish on your website."],
+   doc:function(){return DRAFT+H('Decomposed granite vs. gravel in Phoenix: which is right for your yard?','Blog draft · ~1,200 words · outline shown')+
+     L(['What decomposed granite is (and why it packs down firm)','What gravel and decorative rock do better','Heat, dust, and monsoon: how each holds up','Paths vs. ground cover: picking by use','How much you need (link to calculator)','See both in person at our yards'],true);}},
+
+  {cat:"mkt", icon:"🔑", title:"Local SEO keyword research",
+   benefit:"The searches Valley homeowners and contractors actually use, mapped to your pages.",
+   tag:"~3 hrs per quarter",
+   how:["Researches local search terms and what's ranking now.","Maps each term to a page or blog idea.","Refreshes quarterly."],
+   doc:function(){return H('Keyword map · sample','Research summary')+
+     T(['Search','Intent','Best page'],[['rock delivery Glendale AZ','Buy now','Glendale yard page'],['decomposed granite Phoenix','Buy / research','DG product page'],['how much rock do I need','Research','Calculator page'],['rip rap near me','Buy now','Rip rap product page']]);}},
+
+  {cat:"mkt", icon:"🛰️", title:"Competitor research",
+   benefit:"A tidy summary of what other Valley rock and landscape supply yards offer, using public info.",
+   tag:"~3 hrs per quarter",
+   how:["Reviews competitors' public websites, reviews, and social pages.","Compares services, delivery options, hours, and online tools.","Summarizes gaps and ideas; no guessing at private data."],
+   doc:function(){return H('Competitor snapshot · sample','Fictional competitors · public info only')+
+     T(['Yard (fictional)','Online shop','Calculators','Weekend hours','Notes'],[['Valley Stone Supply','Yes','No','Sat AM','Strong Instagram'],['Sonoran Rock Co.','No','Yes','Closed','Many reviews mention slow delivery'],['Desert Materials Depot','Yes','Yes','Sat + Sun','Runs seasonal promos']])+
+     C('Idea: highlight your online calculators and early 5 AM opening in ads and posts.',true);}},
+
+  {cat:"mkt", icon:"🎯", title:"Ad copy drafts",
+   benefit:"Search and social ad copy for products and seasons, in several variations to test.",
+   tag:"~2 hrs per campaign",
+   how:["Drafts headlines and descriptions within each platform's limits.","Creates variations for homeowners vs. contractors.","You review and launch them yourself."],
+   doc:function(){return H('Search ad drafts · sample','Headlines ≤ 30 characters')+
+     T(['Headline','Description'],[['Rock & DG Delivered','Family-owned since 1974. Delivery across the Valley. Get a quote online.'],['Decorative Rock in Phoenix','See dozens of colors in person at our yards. Pickup or delivery.'],['Fill Dirt & Rip Rap','Trucks from 5 to 24 tons. Contractors welcome.']]);}},
+
+  {cat:"mkt", icon:"🧮", title:"Calculator how-to content",
+   benefit:"Short guides, posts, and email snippets that help customers use your bulk material, paver, and yards-to-tons calculators.",
+   tag:"~2 hrs per month",
+   how:["Writes simple step-by-step how-tos for each calculator.","Creates short posts and email footers linking to them.","Updates content if the calculators change."],
+   doc:function(){return H('How to use our bulk material calculator (sample)','Web + email snippet')+
+     L(['Measure length and width of your area in feet.','Pick how deep you want the material (2–3 inches is common for rock).','Enter the numbers and get cubic yards and tons.','Order a little extra for low spots.'],true)+
+     C('Footer snippet: "Not sure how much you need? Try our material calculator."',true);}},
+
+  {cat:"mkt", icon:"📧", title:"Homeowner seasonal emails",
+   benefit:"A short seasonal email to past homeowner customers with project ideas and a reason to come back.",
+   tag:"~2 hrs per email",
+   how:["Uses your past customer list (only people who opted in).","Drafts a helpful, seasonal email with project ideas.","You approve and send."],
+   doc:function(){return E({to:'Past homeowner customers (sample list)',subj:'3 weekend yard projects for cooler weather',body:['Cooler weather is here, which makes it a great time for yard projects. Here are three favorites:','1. Refresh faded rock in the front yard<br>2. Add a decomposed granite path to the side gate<br>3. Build a dry creek bed before next monsoon','Not sure where to start? Reply with a photo of your yard and we\'ll suggest materials.']});}},
+  /* ================= SAFETY, FLEET & COMPLIANCE ================= */
+  {cat:"safety", icon:"🦺", title:"Driver safety briefing drafts",
+   benefit:"A short weekly safety talk for drivers and yard crew, in English and Spanish.",
+   tag:"~1 hr per week",
+   how:["Picks a topic from your list and the season (backing at job sites, dump-bed safety, heat).","Drafts a 5-minute talk with key points and a sign-in sheet.","You or a supervisor review and deliver it."],
+   doc:function(){return H('Weekly safety talk: backing up at residential drops (sample)','5 minutes · English + Spanish versions')+
+     L(['Walk the drop spot first when you can. Look for wires, branches, and soft ground.','Use a spotter when one is available; agree on hand signals.','Watch for kids, pets, and cars in driveways and sidewalks.','Raise the bed only on level ground.'],true)+
+     D('A general safety reminder, not a substitute for your company safety program or required training.');}},
+
+  {cat:"safety", icon:"🌡️", title:"Heat-safety reminders",
+   benefit:"Automatic heat-day reminders for crews: water, shade, rest breaks, and signs of heat illness.",
+   tag:"~30 min per heat day",
+   how:["A daily routine checks the forecast for heat warnings.","Drafts a short crew message and a supervisor checklist.","You approve and share it the way your crew already gets messages."],
+   doc:function(){return SMS('Drivers & yard crew (sample group)',['🌡️ Heat warning today. Drink water every 15–20 minutes, take shade breaks, and check on each other. Tell a supervisor right away if you feel dizzy, confused, or stop sweating.',{es:true,t:'🌡️ Alerta de calor hoy. Tome agua cada 15–20 minutos, descanse en la sombra y cuide a sus compañeros. Avise a un supervisor si se siente mareado o confundido.'}],'General reminder only, not medical or legal advice.');}},
+
+  {cat:"safety", icon:"🔧", title:"Fleet & equipment maintenance reminders",
+   benefit:"Never miss an oil change, inspection, or service interval on trucks, loaders, and screening equipment.",
+   tag:"~2 hrs per month",
+   how:["Tracks service intervals in a simple sheet (miles, hours, or dates).","Sends a weekly list of what is due soon.","Drafts the shop appointment request for your OK."],
+   doc:function(){return H('Maintenance due · next 2 weeks','Sample fleet')+
+     T(['Unit','Item','Due','Status'],[['Truck 3 (10-ton)','Oil + filters','In ~400 miles',pl('Soon')],['Truck 7 (24-ton)','Brake inspection','Next week',pl('Book','warn')],['Loader 2','250-hr service','In ~20 hrs',pl('Soon')],['Screen plant','Belt + bearing check','This week',pl('Book','warn')]]);}},
+
+  {cat:"safety", icon:"📋", title:"Driver & vehicle document reminders",
+   benefit:"Reminders before registrations, inspections, and driver credential dates expire.",
+   tag:"~1 hr per month",
+   how:["Tracks expiration dates you enter in a simple sheet.","Reminds you 60 and 30 days ahead.","Lists what's needed to renew; you or your safety lead handle the filing."],
+   doc:function(){return H('Upcoming renewals','Sample dates')+
+     T(['Item','Who / unit','Expires'],[['Vehicle registration','Truck 5','In 41 days'],['Annual vehicle inspection','Truck 2','In 26 days'],['Driver medical card','Driver A (sample)','In 33 days'],['Commercial license','Driver B (sample)','In 58 days']])+
+     D('General reminders only. Confirm requirements with the agencies that regulate your fleet; this is not legal advice.');}},
+
+  {cat:"safety", icon:"⛏️", title:"Mining & permit research summaries",
+   benefit:"Plain-English summaries of public rules and guidance that may apply to mining, dust, and hauling.",
+   tag:"~2–3 hrs per topic",
+   how:["Researches public agency websites and published guidance on the topic you name.","Summarizes key points, deadlines, and who to contact.","Clearly labeled as research. You confirm with your advisors."],
+   doc:function(){return H('Research summary: dust control at sand & gravel yards (sample topic)','Public sources · for discussion')+
+     L(['Local air-quality agencies may require dust-control permits or plans for earth-moving and stockpile sites.','Common practices in public guidance: watering haul roads, covering loads, wind-event plans.','Federal mine-safety rules generally cover training and inspections at mine sites.'])+
+     D('Research summary only, not legal, engineering, or compliance advice. Confirm requirements with the agencies and qualified professionals.');}},
+
+  {cat:"safety", icon:"🌪️", title:"Dust storm & monsoon readiness checklist",
+   benefit:"A seasonal checklist for yards and trucks: securing stockpiles, driving in dust, and flood-prone routes.",
+   tag:"~2 hrs per season",
+   how:["Drafts a pre-monsoon checklist from your notes and public guidance.","Schedules reminders to review it with crews.","Updates it after each season."],
+   doc:function(){return H('Monsoon readiness · sample checklist','Review with crews before the season starts')+
+     L(['Review dust-storm driving guidance with all drivers (pull off, lights off, foot off the brake).','Check tarps and load covers on every truck.','List low-water crossings on regular routes.','Confirm stockpile watering and wind plans.'],true)+
+     D('General reminders, not a complete safety program.');}},
+
+  {cat:"safety", icon:"🧯", title:"Incident report templates",
+   benefit:"Simple forms and a guided summary when something goes wrong: a near miss, damage, or injury.",
+   tag:"~1 hr per incident",
+   how:["Provides a clear incident form for supervisors.","Turns notes into a clean, factual summary.","Reminds you of follow-ups like insurance calls."],
+   doc:function(){return H('Incident summary (sample)','Near miss · Phoenix yard · sample')+
+     T(['Field','Entry'],[['What happened','Customer vehicle pulled into the loading lane during loading.'],['Injuries','None'],['Immediate action','Loading paused; customer directed to waiting area.'],['Prevention idea','Add a painted "wait here" line and sign.']])+
+     D('A documentation aid. Follow your insurer and legal guidance for reporting.');}},
+
+  {cat:"safety", icon:"🎓", title:"Training & certification tracker",
+   benefit:"Who's trained on what (loader, forklift, first aid) and when refreshers are due.",
+   tag:"~1 hr per month",
+   how:["Keeps a simple roster of training and dates.","Reminds you before refreshers are due.","Drafts the scheduling message for the crew."],
+   doc:function(){return H('Training tracker · sample roster')+
+     T(['Person (sample)','Training','Refresher due'],[['Operator A','Loader operation','In 3 weeks'],['Operator B','Forklift','In 2 months'],['Driver C','First aid / CPR','Overdue ⚠️'],['Yard D','New-hire site safety','Complete']]);}},
+  /* ================= OFFICE & ADMIN ================= */
+  {cat:"admin", icon:"📥", title:"Inbox triage",
+   benefit:"Sorts the inbox every morning: quotes, orders, account questions, vendor mail, and things you can ignore.",
+   tag:"~1 hr per day",
+   how:["Reads new email at 5 AM, before the yard opens.","Labels by type and urgency and summarizes what needs you.","Drafts replies to routine messages; you approve."],
+   doc:function(){return H('Inbox summary · this morning','Sample inbox · 46 new emails')+
+     T(['Bucket','Count','Action'],[['Quote requests','9','Drafts ready'],['Order changes','4','2 need you'],['Account / billing','6','Drafts ready'],['Vendors','8','Summarized'],['Newsletters / promos','19','Archived']]);}},
+
+  {cat:"admin", icon:"💵", title:"Invoice follow-up drafts",
+   benefit:"Polite, escalating reminders for unpaid invoices, so you don't have to chase.",
+   tag:"2–3 hrs per week",
+   how:["Reads aging from your invoices or accounting exports.","Drafts friendly reminders at 7, 15, and 30 days past due.","Escalates tone gently; you approve each one."],
+   doc:function(){return H('Past-due follow-ups','Sample accounts')+
+     T(['Account','Days past due','Step'],[['Ocotillo Outdoor','9','Friendly reminder'],['Mesa Grande Pools','18','Second reminder'],['Sonoran Site Works','34','Call + email']])+
+     E({to:'Mesa Grande Pools (sample)',subj:'Reminder: invoice past due',body:['Hi Lena, a quick reminder that one invoice on your account is now past due. A copy is attached. If it\'s already been sent, thank you, and please ignore this note.']});}},
+
+  {cat:"admin", icon:"📢", title:"Hiring posts for drivers & operators",
+   benefit:"Job posts and screening questions for CDL drivers, loader operators, and yard help.",
+   tag:"~2 hrs per role",
+   how:["Drafts job posts from your role details and schedule.","Writes short screening questions.","Summarizes applicants from your inbox for you to review."],
+   doc:function(){return DRAFT+H('Job post: CDL dump truck driver (sample)',CO()+' · Phoenix area')+
+     L(['Early starts; yard opens at 5 AM.','Local Valley routes, home every night.','Requirements: valid CDL, clean driving record (details in the post you approve).','Family-owned since 1974.'])+
+     B('Screening questions')+L(['Which truck types have you driven?','Comfortable backing into residential driveways?','Available for Saturday mornings?'],true);}},
+
+  {cat:"admin", icon:"🗓️", title:"Interview scheduling",
+   benefit:"Finds times that work, sends invites, and reminds candidates the day before.",
+   tag:"~1 hr per hire",
+   how:["Reads your calendar for open slots.","Drafts invites to candidates you choose.","Sends reminder drafts the day before."],
+   doc:function(){return E({to:'Candidate (sample)',subj:'Interview for the loader operator role',body:['Hi Chris, thanks for applying! Could you come by our yard for a short interview? Open times: Tuesday 10:00 AM, Wednesday 1:30 PM, or Thursday 9:00 AM. Reply with what works best.']});}},
+
+  {cat:"admin", icon:"📘", title:"SOPs & training docs",
+   benefit:"Turns \"how we do it\" into clear, step-by-step procedures for the counter, scale, loading, and dispatch.",
+   tag:"~3 hrs per SOP",
+   how:["You explain the process (voice notes are fine).","Drafts a clean SOP with steps and checklists.","Creates a printable and shareable version."],
+   doc:function(){return H('SOP: Retail yard pickup (sample)','Counter + loader operator')+
+     L(['Confirm product and quantity at the counter; record vehicle type.','Check that the load fits the vehicle\'s rating; suggest a smaller load if unsure.','Print the pickup ticket; direct the customer to the loading lane.','Load, then remind the customer to tarp the load.','File the signed ticket.'],true);}},
+
+  {cat:"admin", icon:"📝", title:"Meeting notes & action items",
+   benefit:"Clean notes from staff, safety, and vendor meetings, with owners and due dates.",
+   tag:"~30 min per meeting",
+   how:["Works from a recording, transcript, or your rough notes.","Writes a summary, decisions, and action items.","Sends follow-up reminders to owners."],
+   doc:function(){return H('Monday ops meeting · notes (sample)')+
+     B('Decisions')+L(['Move Glendale yard decomposed granite transfer to Wednesday.','Start pre-monsoon drainage-rock push next month.'])+
+     T(['Action','Owner','Due'],[['Book Truck 7 brake inspection','Shop lead','Fri'],['Draft driver job post','Office','Wed'],['Update counter coverage chart','Counter lead','Next Mon']]);}},
+
+  {cat:"admin", icon:"🧑‍💼", title:"New-hire onboarding checklist",
+   benefit:"A first-week checklist for new drivers, operators, and counter staff, with reminders.",
+   tag:"~2 hrs per hire",
+   how:["Builds a checklist by role.","Reminds the supervisor of each step during the first week.","Tracks what's done."],
+   doc:function(){return H('Onboarding: new driver (sample)')+
+     T(['Day','Task','Status'],[['1','Paperwork + yard safety walk',pl('Done')],['1','Truck walkaround with lead driver',pl('Done')],['2–3','Ride-alongs on residential drops',pl('Next','blue')],['5','Check-in with owner',pl('Planned')]]);}},
+
+  {cat:"admin", icon:"🔗", title:"Vendor & supplier coordination",
+   benefit:"Keeps orders with paver, rebar, bag, and parts suppliers on track, with clear follow-ups.",
+   tag:"~1–2 hrs per week",
+   how:["Tracks open purchase orders from your inbox.","Flags late confirmations and deliveries.","Drafts follow-ups for your OK."],
+   doc:function(){return E({to:'Sunline Pavers (fictional)',subj:'Checking on our paver order',body:['Hi team, checking on the 4 pallets of tan blend we ordered last week. Do you have a delivery date for our Phoenix yard?'],note:'Also waiting on: Valley Steel Supply rebar confirmation (asked 3 days ago).'});}},
+  /* ================= MONEY & PLANNING ================= */
+  {cat:"money", icon:"⛽", title:"Fuel cost tracker",
+   benefit:"Tracks fuel spend per truck and per load, and spots trucks or routes that burn more than they should.",
+   tag:"~1 hr per week",
+   how:["Reads fuel card emails or exports as they arrive.","Updates a simple sheet by truck, week, and loads delivered.","Flags outliers and price trends."],
+   doc:function(){return H('Fuel summary · last week','Sample figures for illustration')+
+     T(['Truck','Gallons','Loads','Gal per load'],[['Truck 2 (24-ton)','212','14','15.1'],['Truck 3 (10-ton)','138','19','7.3'],['Truck 5 (5-ton)','74','16','4.6'],['Truck 7 (24-ton)','265','13','20.4 ⚠️']])+
+     C('Truck 7 is using about a third more fuel per load than Truck 2 on similar runs. Worth a maintenance check (also on the service list).');}},
+
+  {cat:"money", icon:"📒", title:"Monthly budget tracker",
+   benefit:"Spend vs. budget for fuel, repairs, parts, payroll extras, and bought-in goods.",
+   tag:"~1 hr per week",
+   how:["Reads receipts and statements as they arrive.","Updates a budget sheet and compares it to your targets.","Alerts you when a category trends over budget."],
+   doc:function(){return H('Month-to-date budget · day 18 of 30','Sample figures for illustration')+
+     bars([['Fuel',18400,26000],['Truck & equipment repairs',9200,10000],['Wear parts (screens, belts)',4100,3500],['Bought-in goods (pavers, rebar, bags)',21000,30000]])+
+     C('⚠️ Wear parts are over budget with 12 days left, mostly from the screen belt repair.');}},
+
+  {cat:"money", icon:"🌊", title:"Cash flow summary",
+   benefit:"A 90-day look ahead so slow months, big repairs, and equipment payments don't surprise you.",
+   tag:"~2 hrs per month",
+   how:["Builds a simple sheet from open invoices, expected sales, payroll, and known bills.","Shows each assumption clearly so you can change it.","Flags any week where cash may run tight."],
+   doc:function(){return H('90-day cash outlook','Sample numbers · assumptions editable')+
+     T(['Month','Money in','Money out','Net'],[['Month 1','$412k','$385k','+$27k'],['Month 2','$368k','$392k','−$24k ⚠️'],['Month 3','$440k','$398k','+$42k']])+
+     C('Month 2 dips because of the loader payment and a slower sales month. Option: follow up on account receivables early that month.');}},
+
+  {cat:"money", icon:"📟", title:"KPI dashboard",
+   benefit:"An interactive page with the numbers that matter: tons sold, loads per truck, on-time drops, quote speed.",
+   tag:"~2 hrs per week",
+   how:["Pulls from your sheets, tickets, and inbox each week.","Builds an interactive HTML dashboard you can open on your phone.","Highlights what changed and why."],
+   doc:function(){return H('Weekly KPIs','Sample figures for illustration')+
+     KPI([['Tons sold','2,840','+6%'],['Loads per truck/day','4.3','+0.2'],['On-time drops','92%','−2%','dn'],['Quote reply time','3.1 hrs','−40 min'],['Quote win rate','61%','+3%'],['Repeat accounts','148','+5']]);}},
+
+  {cat:"money", icon:"📈", title:"Weekly sales & tonnage summary",
+   benefit:"One email every Monday: tons by product, pickups vs. deliveries, new accounts, and what needs attention.",
+   tag:"~1 hr per week",
+   how:["Scheduled routine every Monday at 5 AM.","Pulls from invoices, tickets, or your sales sheet.","Explains trends in plain English."],
+   doc:function(){return H('Weekly summary · last week','Sample figures')+
+     T(['Metric','Last week','Prior'],[['Tons sold','2,840','2,680'],['Delivery loads','214','198'],['Yard pickups','163','171'],['New accounts','4','2'],['Quotes sent','58','51']])+
+     L(['Decomposed granite led growth; watch Glendale stock.','Yard pickups dipped on the hottest days.']);}},
+
+  {cat:"money", icon:"🚚", title:"Delivery zone efficiency",
+   benefit:"Time and miles per load by part of the Valley, so delivery zones and minimums make sense.",
+   tag:"~2 hrs per month",
+   how:["Combines tickets, addresses, and truck times.","Calculates average round-trip time and miles by zone.","Suggests zone or scheduling changes for you to decide."],
+   doc:function(){return H('Delivery zones · last month','Sample data')+
+     T(['Zone','Loads','Avg round trip','Avg miles'],[['West Valley','420','1 h 25 m','28'],['Central Phoenix','310','1 h 10 m','19'],['East Valley','180','2 h 05 m','52'],['Far West (Buckeye)','95','2 h 20 m','61']])+
+     C('East Valley small loads take the longest per ton. Idea: group them on set days.');}},
+
+  {cat:"money", icon:"🗃️", title:"Quarterly tax estimate reminders",
+   benefit:"Reminders before estimated-tax and filing dates, with the documents your accountant usually asks for.",
+   tag:"~1 hr per quarter",
+   how:["Calendar reminders 2 weeks before each date.","Gathers the reports your accountant asks for.","Drafts the email to your accountant."],
+   doc:function(){return E({to:'Your accountant (sample)',subj:'Q3 docs for estimated taxes',body:['Hi Pat, attached are the Q3 sales summary, fuel and equipment expense reports, and payroll totals. Let me know if you need anything else.']})+
+     D('General reminders only, not tax advice.');}},
+
+  {cat:"money", icon:"🚜", title:"Equipment buy vs. lease comparison",
+   benefit:"A side-by-side look at buying, financing, or leasing a truck, loader, or screen.",
+   tag:"~2 hrs per decision",
+   how:["You share the quotes or offers you received.","Builds a comparison over the same time period.","Lists assumptions so you and your accountant can check them."],
+   doc:function(){return H('Loader options · 5-year view','Sample numbers only')+
+     T(['Option','Upfront','Monthly','5-yr total'],[['Buy (cash)','$210k','—','$210k + upkeep'],['Finance','$30k','$3.6k','$246k'],['Lease','$0','$4.2k','$252k (no ownership)']])+
+     D('Illustration only. Review with your accountant before deciding.');}},
+  /* ================= GROWTH & STRATEGY ================= */
+  {cat:"growth", icon:"🔭", title:"New market research",
+   benefit:"Where is the Valley growing? Research on new subdivisions, commercial projects, and areas that will need material.",
+   tag:"~3 hrs per report",
+   how:["Researches public permit data, news, and planning documents.","Summarizes growth areas and the kind of material they need.","Updates quarterly."],
+   doc:function(){return H('Growth areas · sample report','Public sources · illustrative')+
+     T(['Area','Signal','Material need'],[['Far West Valley','New subdivisions in planning','Fill, base, landscape rock'],['North Valley','Commercial pads approved','Base, rip rap'],['Southeast Valley','Road widening projects','Aggregate base']])+
+     D('Research summary for discussion. Verify with current public records.');}},
+
+  {cat:"growth", icon:"📍", title:"New yard site research",
+   benefit:"A research summary of candidate areas for a future yard: drive times, zoning basics, and nearby demand.",
+   tag:"~5 hrs per study",
+   how:["You name the areas you're curious about.","Researches public info on zoning, roads, and growth.","Builds a comparison you can discuss with your advisors."],
+   doc:function(){return H('Possible third yard · sample comparison','Research summary · illustrative')+
+     T(['Area','Drive time to growth zones','Industrial zoning nearby','Notes'],[['Area A (sample)','Short','Some','Near new subdivisions'],['Area B (sample)','Medium','Yes','Close to freeway'],['Area C (sample)','Long','Yes','Lower demand today']])+
+     D('Not real-estate, zoning, or legal advice. Confirm with professionals.');}},
+
+  {cat:"growth", icon:"📇", title:"B2B prospect lists",
+   benefit:"Lists of landscapers, pool builders, contractors, and property managers in your area, from public info.",
+   tag:"~3 hrs per list",
+   how:["Researches public business listings and websites.","Builds a list with type, area, and public contact page.","You decide who to reach out to and how."],
+   doc:function(){return H('Prospect list · sample','Fictional businesses · public info only')+
+     T(['Business (fictional)','Type','Area','Why'],[['Blue Agave Pools','Pool builder','Peoria','Uses fill + decorative rock'],['Ironwood Site Works','Site contractor','Buckeye','New commercial projects'],['Canyon View HOA Mgmt','Property manager','Glendale','Common-area rock refresh'],['Greenline Xeriscapes','Landscaper','Phoenix','High-volume residential']]);}},
+
+  {cat:"growth", icon:"☕", title:"Owner's Monday briefing",
+   benefit:"One page every Monday: last week's numbers, this week's schedule, risks, and three things to focus on.",
+   tag:"~1 hr per week",
+   how:["Combines sales, dispatch, stock, and inbox signals.","Arrives at 5 AM Monday.","Ends with three suggested priorities."],
+   doc:function(){return H('Monday briefing (sample)')+
+     L(['Sales up 6%; decomposed granite running low in Glendale.','Heat warning Tue–Wed: drops moved early.','2 invoices 30+ days past due; follow-ups drafted.'])+
+     B('Focus this week')+L(['Approve the decomposed granite transfer.','Call Palo Verde Pools (orders down).','Post the driver job.'],true);}},
+
+  {cat:"growth", icon:"🧭", title:"New product & service ideas",
+   benefit:"Research on products or services your customers keep asking about, with a simple pros-and-cons view.",
+   tag:"~3 hrs per idea",
+   how:["Scans your inbox and quote requests for things you don't offer yet.","Researches demand and how others offer it, from public info.","Summarizes options for you to decide."],
+   doc:function(){return H('Customer asks · last 90 days','Sample themes')+
+     T(['Request theme','Times asked','Idea'],[['Spreading / install help','31','Refer list of partner landscapers'],['Small "sample bag" of rock colors','18','Color sample kit at the counter'],['Weekend Sunday pickup','12','Test seasonal Sunday hours']])+
+     C('These are ideas only. Nothing changes without your decision.',true);}},
+
+  {cat:"growth", icon:"🏦", title:"Grant, rebate & financing research",
+   benefit:"Public programs that may help with equipment, efficiency, or training costs.",
+   tag:"~3 hrs per quarter",
+   how:["Researches public programs: SBA loans, state programs, utility rebates.","Summarizes eligibility, deadlines, and links.","Reminds you of deadlines; you verify and apply."],
+   doc:function(){return H('Programs worth a look','Research summary · verify eligibility and terms')+
+     T(['Program type','What it offers','Deadline'],[['SBA-backed equipment loan','Financing for trucks and equipment','Rolling'],['State workforce training programs','Funds for driver/operator training (varies)','Check annually'],['Utility efficiency rebates','Rebates on efficient lighting or equipment','Varies']])+
+     D('Research summary only. Confirm details with each program before applying.');}},
+
+  {cat:"growth", icon:"🗺️", title:"Annual plan & strategy deck",
+   benefit:"A clear yearly plan: goals, product focus, fleet needs, and hiring, as an interactive deck.",
+   tag:"~6 hrs per year",
+   how:["Uses last year's numbers and your goals.","Builds a plan and an interactive presentation.","You edit before sharing with your team or lender."],
+   doc:function(){return H('Next year plan (sample)','6 slides · interactive presentation')+
+     '<div class="slides">'+
+     '<div class="slide dark"><small>'+CO()+'</small><b>Next Year Plan</b><small>Goals · focus · fleet · team</small></div>'+
+     '<div class="slide"><b>Goals</b><small>Grow contractor accounts · faster quote replies</small></div>'+
+     '<div class="slide"><b>Product focus</b><small>Decorative rock · drainage rock · bagged goods</small></div>'+
+     '<div class="slide dark"><b>Fleet & team</b><small>Plan for 1 more truck · 2 drivers</small></div></div>';}}
+  ];
+
+  /* ---------- Render ---------- */
+  document.title = "What an AI team could do for " + COMPANY_NAME;
+  document.querySelectorAll("[data-company]").forEach(function(el){el.textContent = COMPANY_NAME;});
+  document.querySelectorAll("[data-presenter]").forEach(function(el){el.textContent = PRESENTER;});
+  document.getElementById("stat-ideas").textContent = CARDS.length;
+  document.getElementById("stat-cats").textContent = CATS.length;
+
+  var board = document.getElementById("board"), filters = document.getElementById("filters");
+  var qInput = document.getElementById("q"), countEl = document.getElementById("count"), emptyEl = document.getElementById("empty");
+  var activeCat = "all", query = "", order = [], collapsed = {};
+  var catName = function(id){for(var i=0;i<CATS.length;i++) if(CATS[i].id===id) return CATS[i].name; return "";};
+  function $(id){return document.getElementById(id);}
+
+  /* ---------- Plan state (saved in localStorage, keyed by company) ---------- */
+  var QUOTE_TO = String(qs.get("email") || QUOTE_EMAIL || "").trim();
+  var EMAIL_RE = /^[^\s@<>()]+@[^\s@<>()]+\.[^\s@<>()]+$/;
+  var STORE_KEY = "vb-plan:" + COMPANY_NAME;
+  function slug(s){return String(s).toLowerCase().replace(/&/g,"and").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");}
+  var BY_ID = {};
+  CARDS.forEach(function(c, i){ c.id = c.cat + "--" + slug(val(c.title)); c.idx = i; BY_ID[c.id] = c; });
+  function emptyPlan(){return {sel:[], custom:[], contact:{}};}
+  function loadPlan(){
+    try{
+      var p = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+      if (!p || typeof p !== "object") return emptyPlan();
+      return {
+        sel: Array.isArray(p.sel) ? p.sel.filter(function(id){return !!BY_ID[id];}) : [],
+        custom: Array.isArray(p.custom) ? p.custom.filter(function(c){return c && c.title;}).map(function(c){return {id:String(c.id||("c"+Date.now())), title:String(c.title).slice(0,90), desc:String(c.desc||"").slice(0,800)};}) : [],
+        contact: (p.contact && typeof p.contact === "object") ? p.contact : {}
+      };
+    }catch(e){ return emptyPlan(); }
+  }
+  var plan = loadPlan();
+  function savePlan(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(plan)); }catch(e){} }
+  function isSel(id){ return plan.sel.indexOf(id) > -1; }
+  function setSel(id, on){
+    var has = isSel(id);
+    if (on && !has) plan.sel.push(id);
+    if (!on && has) plan.sel.splice(plan.sel.indexOf(id), 1);
+    savePlan(); syncSel(id);
+  }
+  function addCustom(title, desc){
+    var item = {id:"c" + Date.now().toString(36) + Math.random().toString(36).slice(2,6), title:title, desc:desc||""};
+    plan.custom.push(item); savePlan(); updateBar(); if (isOpen(reviewBd)) renderReview();
+    return item;
+  }
+  function removeCustom(id){
+    plan.custom = plan.custom.filter(function(c){return c.id !== id;});
+    savePlan(); updateBar(); if (isOpen(reviewBd)) renderReview();
+  }
+  function totalCount(){ return plan.sel.length + plan.custom.length; }
+
+  function syncSel(id){
+    var on = isSel(id);
+    var w = board.querySelector('.card-wrap[data-id="'+id+'"]');
+    if (w){ w.classList.toggle("selected", on); var cb = w.querySelector("input[data-pick]"); cb.checked = on; w.querySelector(".pick-txt").textContent = on ? "In my plan" : "Add to my plan"; }
+    if (current !== null && CARDS[current].id === id) syncModalPick();
+    updateBar();
+    if (isOpen(reviewBd)) renderReview();
+  }
+  function updateBar(){ if (typeof renderFilters==="function" && filters) renderFilters();
+    var n = plan.sel.length, m = plan.custom.length;
+    $("pb-count").innerHTML = '<b>'+n+'</b> selected' + (m ? ' + <b>'+m+'</b> of your own' : '');
+    $("pb-review").textContent = "Review my selections" + (n+m ? " (" + (n+m) + ")" : "");
+  }
+
+  /* ---------- Board ---------- */
+  function norm(s){return String(s).toLowerCase();}
+  function matches(card){
+    if (!query) return true;
+    var hay = norm(val(card.title)+" "+val(card.benefit)+" "+catName(card.cat)+" "+val(card.how).join(" "));
+    return query.split(/\s+/).every(function(w){return hay.indexOf(w) > -1;});
+  }
+  function hl(text){
+    var t = esc(text); if (!query) return t;
+    query.split(/\s+/).filter(Boolean).forEach(function(w){
+      var re = new RegExp("(" + w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&") + ")","ig");
+      t = t.replace(re, "<mark>$1</mark>");
+    });
+    return t;
+  }
+  function renderFilters(){
+    var html = '<button type="button" class="chip" data-cat="all" aria-pressed="'+(activeCat==="all")+'">All ('+CARDS.length+')</button>';
+    CATS.forEach(function(c){
+      var n = CARDS.filter(function(x){return x.cat===c.id;}).length;
+      html += '<button type="button" class="chip" data-cat="'+c.id+'" aria-pressed="'+(activeCat===c.id)+'">'+esc(c.name)+' ('+n+')</button>';
+    });
+    var nOwn = plan.custom.length;
+    html += '<button type="button" class="chip chip-own" data-add-own-chip aria-haspopup="dialog">\u2795 Something else? Add your own'+(nOwn?' ('+nOwn+')':'')+'</button>';
+    filters.innerHTML = html;
+  }
+  var ADD_OWN_CARD = '<button type="button" class="card add-own" data-add-own aria-haspopup="dialog"><span class="ic" aria-hidden="true">➕</span><h3>Something else? Add your own</h3><p>Don\'t see what you need? Describe it and we\'ll include it in your custom quote.</p><span class="open">Add an idea →</span></button>';
+  function renderBoard(){
+    var html = "", delay = 0, shown = 0; order = [];
+    CATS.forEach(function(c){
+      if (activeCat!=="all" && activeCat!==c.id) return;
+      var items = [];
+      CARDS.forEach(function(card, i){ if (card.cat===c.id && matches(card)) items.push(i); });
+      if (!items.length) return;
+      var open = query ? true : !collapsed[c.id];
+      html += '<details class="cat" data-cat="'+c.id+'"'+(open?' open':'')+'><summary><h2>'+esc(c.name)+'</h2><span class="cnt">'+items.length+(query?' match'+(items.length>1?'es':''):' ideas')+'</span><p>'+esc(c.blurb)+'</p><span class="chev" aria-hidden="true">▾</span></summary><div class="grid">';
+      items.forEach(function(i){
+        var card = CARDS[i], on = isSel(card.id), t = val(card.title); order.push(i); shown++;
+        html += '<div class="card-wrap'+(on?' selected':'')+'" data-id="'+card.id+'" style="animation-delay:'+Math.min(delay++*25,600)+'ms">'+
+          '<button type="button" class="card" data-i="'+i+'" aria-haspopup="dialog" aria-label="Preview: '+esc(t)+'">'+
+          '<span class="ic" aria-hidden="true">'+val(card.icon)+'</span>'+
+          '<h3>'+hl(t)+'</h3><p>'+hl(val(card.benefit))+'</p>'+
+          '<span class="foot"><span class="tag">⏱ Est. '+esc(card.tag)+' saved (illustrative)</span><span class="open">Preview →</span></span></button>'+
+          '<label class="pick"><input type="checkbox" data-pick="'+card.id+'"'+(on?' checked':'')+' aria-label="Add to my plan: '+esc(t)+'"><span class="box" aria-hidden="true">✓</span><span class="pick-txt">'+(on?'In my plan':'Add to my plan')+'</span></label>'+
+          '</div>';
+      });
+      html += '</div></details>';
+    });
+    html += '<section class="own-sec" aria-labelledby="own-h"><h2 id="own-h">Something else?</h2><div class="grid">'+ADD_OWN_CARD+'</div></section>';
+    board.innerHTML = html;
+    countEl.innerHTML = 'Showing <b>'+shown+'</b> of <b>'+CARDS.length+'</b> ideas';
+    emptyEl.classList.toggle("show", shown===0);
+  }
+
+  board.addEventListener("toggle", function(e){
+    var d = e.target; if (!d.matches || !d.matches("details.cat") || query) return;
+    collapsed[d.dataset.cat] = !d.open;
+  }, true);
+  board.addEventListener("change", function(e){
+    var cb = e.target; if (!cb.matches("input[data-pick]")) return;
+    setSel(cb.getAttribute("data-pick"), cb.checked);
+  });
+  board.addEventListener("click", function(e){
+    if (e.target.closest(".pick")) return;
+    if (e.target.closest("[data-add-own]")) { openCustom(e.target.closest("[data-add-own]")); return; }
+    var c = e.target.closest(".card"); if(!c) return;
+    openModal(+c.dataset.i, c);
+  });
+  filters.addEventListener("click", function(e){
+    var b = e.target.closest(".chip"); if(!b) return;
+    if (b.hasAttribute("data-add-own-chip")) { openCustom(b); return; }
+    activeCat = b.dataset.cat; renderFilters(); renderBoard();
+  });
+  var t; qInput.addEventListener("input", function(){
+    clearTimeout(t); t = setTimeout(function(){ query = norm(qInput.value.trim()); renderBoard(); }, 120);
+  });
+  qInput.addEventListener("keydown", function(e){ if (e.key==="Escape" && qInput.value){ qInput.value=""; query=""; renderBoard(); } });
+  $("expand-all").addEventListener("click", function(){ collapsed = {}; renderBoard(); });
+  $("collapse-all").addEventListener("click", function(){ CATS.forEach(function(c){collapsed[c.id]=true;}); if(query){qInput.value="";query="";} renderBoard(); });
+  $("empty-add").addEventListener("click", function(e){ openCustom(e.currentTarget); });
+
+  /* ---------- Dialog manager (stack: Esc closes the top one, Tab stays inside) ---------- */
+  var backdrop = $("backdrop"), modal = $("modal"), customBd = $("custom-bd"), reviewBd = $("review-bd");
+  var stack = [];
+  function isOpen(bd){ return bd.classList.contains("show"); }
+  function openDlg(bd, focusEl, onClose){
+    if (isOpen(bd)) { if (focusEl) focusEl.focus(); return; }
+    bd.classList.add("show"); bd.setAttribute("aria-hidden","false");
+    stack.push({bd:bd, onClose:onClose, opener:document.activeElement});
+    document.body.style.overflow = "hidden";
+    var dlg = bd.querySelector(".modal"); dlg.scrollTop = 0;
+    setTimeout(function(){ (focusEl || dlg).focus(); }, 30);
+  }
+  function closeDlg(bd){
+    var k = -1; for (var i=stack.length-1;i>=0;i--) if (stack[i].bd===bd){k=i;break;}
+    if (k<0) return;
+    var item = stack.splice(k,1)[0];
+    bd.classList.remove("show"); bd.setAttribute("aria-hidden","true");
+    if (!stack.length) document.body.style.overflow = "";
+    var target = item.onClose ? item.onClose() : null;
+    target = target || item.opener;
+    if (target && document.body.contains(target)) { var d = target.closest && target.closest("details"); if (d && !d.open) d.open = true; target.focus(); }
+  }
+  [backdrop, customBd, reviewBd].forEach(function(bd){
+    bd.addEventListener("click", function(e){ if (e.target===bd || e.target.closest("[data-close]")) closeDlg(bd); });
+  });
+
+  /* ---------- Preview modal ---------- */
+  var current = null;
+  var mPick = $("m-pick");
+  function syncModalPick(){
+    var on = current !== null && isSel(CARDS[current].id);
+    mPick.checked = on;
+    $("m-pick-label").classList.toggle("on", on);
+    $("m-pick-txt").textContent = on ? "In my plan" : "Add to my plan";
+  }
+  mPick.addEventListener("change", function(){ if (current!==null) setSel(CARDS[current].id, mPick.checked); });
+  function fillModal(i){
+    var c = CARDS[i];
+    $("m-icon").textContent = val(c.icon);
+    $("m-title").textContent = val(c.title);
+    $("m-sub").textContent = catName(c.cat) + " · " + val(c.benefit);
+    $("m-doc").innerHTML = c.doc();
+    $("m-how").innerHTML = val(c.how).map(function(h){return "<li>"+esc(h)+"</li>";}).join("");
+    $("m-tag").textContent = "⏱ Est. " + c.tag + " saved (illustrative estimate)";
+    mPick.setAttribute("aria-label", "Add to my plan: " + val(c.title));
+    var pos = order.indexOf(i);
+    $("m-pos").textContent = pos > -1 ? (pos+1) + " of " + order.length : "";
+    syncModalPick();
+  }
+  function openModal(i){
+    current = i; fillModal(i);
+    openDlg(backdrop, $("m-close"), function(){
+      var idx = current; current = null;
+      return board.querySelector('.card[data-i="'+idx+'"]');
+    });
+  }
+  function closeModal(){ closeDlg(backdrop); }
+  $("m-close").addEventListener("click", function(e){ e.preventDefault(); e.stopPropagation(); closeModal(); });
+  function step(dir){
+    if (current===null || !order.length) return;
+    var pos = order.indexOf(current); if (pos<0) pos = 0;
+    current = order[(pos + dir + order.length) % order.length];
+    fillModal(current); modal.scrollTop = 0;
+  }
+  $("m-prev").addEventListener("click", function(){step(-1);});
+  $("m-next").addEventListener("click", function(){step(1);});
+
+  /* ---------- "Add your own" form ---------- */
+  var cForm = $("custom-form"), cName = $("c-name"), cDesc = $("c-desc"), cErr = $("c-err");
+  function openCustom(){
+    cForm.reset(); cErr.textContent = ""; cName.removeAttribute("aria-invalid");
+    openDlg(customBd, cName);
+  }
+  cForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    var title = cName.value.trim(), desc = cDesc.value.trim();
+    if (!title){ cErr.textContent = "Please give your idea a short title."; cName.setAttribute("aria-invalid","true"); cName.focus(); return; }
+    addCustom(title, desc);
+    closeDlg(customBd);
+    flash((isOpen(reviewBd) ? $("r-status") : null), "Added “" + title + "” to your plan.");
+  });
+
+  /* ---------- Review & request ---------- */
+  var rForm = $("r-form"), rList = $("r-list"), rErr = $("r-err");
+  var F = {name:$("f-name"), biz:$("f-biz"), email:$("f-email"), phone:$("f-phone"), notes:$("f-notes")};
+  var DEFAULT_BIZ = /^\s*\[.*\]\s*$/.test(COMPANY_NAME) ? "" : COMPANY_NAME;
+  function fillContact(){
+    var c = plan.contact || {};
+    F.name.value = c.name || ""; F.biz.value = c.biz || DEFAULT_BIZ; F.email.value = c.email || ""; F.phone.value = c.phone || ""; F.notes.value = c.notes || "";
+  }
+  function readContact(){
+    var c = {name:F.name.value.trim(), biz:F.biz.value.trim(), email:F.email.value.trim(), phone:F.phone.value.trim(), notes:F.notes.value.trim()};
+    plan.contact = c; savePlan(); return c;
+  }
+  Object.keys(F).forEach(function(k){ F[k].addEventListener("input", function(){ readContact(); F[k].removeAttribute("aria-invalid"); }); });
+
+  function grouped(){
+    return CATS.map(function(cat){
+      return {cat:cat, items:CARDS.filter(function(c){return c.cat===cat.id && isSel(c.id);})};
+    }).filter(function(g){return g.items.length;});
+  }
+  function renderReview(){
+    var n = totalCount(), html = "";
+    $("r-count").textContent = n + (n===1 ? " item" : " items");
+    if (!n) html = '<p class="r-empty">Nothing selected yet. Close this window and tick <strong>Add to my plan</strong> on any card, or add your own idea below.</p>';
+    grouped().forEach(function(g){
+      html += '<div class="r-group"><h3>'+esc(g.cat.name)+' ('+g.items.length+')</h3>';
+      g.items.forEach(function(c){
+        html += '<div class="r-item"><span class="ri-ic" aria-hidden="true">'+val(c.icon)+'</span><span class="ri-t">'+esc(val(c.title))+'</span><button type="button" data-remove-card="'+c.id+'" aria-label="Remove '+esc(val(c.title))+'">Remove</button></div>';
+      });
+      html += '</div>';
+    });
+    if (plan.custom.length){
+      html += '<div class="r-group"><h3>Your own requests ('+plan.custom.length+')</h3>';
+      plan.custom.forEach(function(c){
+        html += '<div class="r-item"><span class="ri-ic" aria-hidden="true">✍️</span><span class="ri-t">'+esc(c.title)+(c.desc?'<small>'+esc(c.desc)+'</small>':'')+'</span><button type="button" data-remove-custom="'+esc(c.id)+'" aria-label="Remove '+esc(c.title)+'">Remove</button></div>';
+      });
+      html += '</div>';
+    }
+    rList.innerHTML = html;
+    $("r-how").textContent = FORM_ENDPOINT
+      ? "Your request is sent securely to " + (PRESENTER || "us") + ". You'll get a finalized quote by email."
+      : (EMAIL_RE.test(QUOTE_TO) ? "This opens your email app with your request addressed to " + QUOTE_TO + ". Nothing is sent until you press Send. You'll get a finalized quote by email." : "Email delivery isn't set up yet. Use Copy summary and send it to us.");
+  }
+  rList.addEventListener("click", function(e){
+    var b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.removeCard) setSel(b.dataset.removeCard, false);
+    else if (b.dataset.removeCustom) removeCustom(b.dataset.removeCustom);
+    else return;
+    renderReview(); rList.focus();
+    flash($("r-status"), "Removed.");
+  });
+  $("r-add").addEventListener("click", function(){ openCustom(); });
+  $("pb-add").addEventListener("click", function(){ openCustom(); });
+  $("pb-review").addEventListener("click", function(){ openReview(); });
+  $("r-edit").addEventListener("click", function(){ showForm(); });
+
+  function showForm(){ $("r-main").hidden = false; $("r-thanks").hidden = true; setTimeout(function(){ F.name.focus(); }, 30); }
+  function openReview(){
+    fillContact(); renderReview(); rErr.textContent = "";
+    $("r-main").hidden = false; $("r-thanks").hidden = true;
+    var submit = $("r-submit"); submit.disabled = false; submit.textContent = "Request my custom quote";
+    openDlg(reviewBd, totalCount() ? F.name : $("r-add"));
+  }
+
+  function summaryText(c){
+    c = c || readContact();
+    var L2 = [];
+    L2.push("Grok Bot plan request - " + (c.biz || "(business not given)"));
+    L2.push("");
+    L2.push("CONTACT");
+    L2.push("Name: " + (c.name || "-"));
+    L2.push("Business: " + (c.biz || "-"));
+    L2.push("Email: " + (c.email || "-"));
+    L2.push("Phone: " + (c.phone || "not provided"));
+    L2.push("");
+    L2.push("SELECTED IDEAS (" + plan.sel.length + ")");
+    var g = grouped();
+    if (!g.length) L2.push("  (none)");
+    g.forEach(function(x){
+      L2.push(x.cat.name + ":");
+      x.items.forEach(function(it){ L2.push("  - " + val(it.title)); });
+    });
+    L2.push("");
+    L2.push("CUSTOM REQUESTS (" + plan.custom.length + ")");
+    if (!plan.custom.length) L2.push("  (none)");
+    plan.custom.forEach(function(it){ L2.push("  - " + it.title + (it.desc ? ": " + it.desc.replace(/\s*\n\s*/g," ") : "")); });
+    L2.push("");
+    L2.push("NOTES");
+    L2.push(c.notes || "(none)");
+    L2.push("");
+    L2.push("Sent from the AI team vision board for " + COMPANY_NAME + ".");
+    return L2.join("\n");
+  }
+  function subjectLine(c){ return "Grok Bot plan request - " + ((c && c.biz) || COMPANY_NAME); }
+  function buildMailto(c){
+    c = c || readContact();
+    if (!EMAIL_RE.test(QUOTE_TO)) return "";
+    var body = summaryText(c).replace(/\r?\n/g, "\r\n");
+    return "mailto:" + encodeURIComponent(QUOTE_TO).replace(/%40/g,"@") + "?subject=" + encodeURIComponent(subjectLine(c)) + "&body=" + encodeURIComponent(body);
+  }
+  function buildPayload(c){
+    // Flat fields so form services (e.g. FormSubmit) render them cleanly in the email
+    return {
+      _subject: subjectLine(c), _replyto: c.email, _template: "box", _captcha: "false",
+      "Name": c.name, "Business": c.biz, "Email": c.email, "Phone": c.phone || "",
+      "Notes": c.notes || "", "Selections": summaryText(c),
+      "Selected count": String(totalCount()), "Board": COMPANY_NAME, "Submitted": new Date().toLocaleString()
+    };
+  }
+  function validate(c){
+    var bad = null;
+    [["name","Please add your name."],["biz","Please add your business name."]].forEach(function(p){ if (!bad && !c[p[0]]) bad = [F[p[0]], p[1]]; });
+    if (!bad && !EMAIL_RE.test(c.email)) bad = [F.email, "Please enter a valid email so we can send your quote."];
+    if (!bad && !totalCount()) bad = [$("r-add"), "Pick at least one idea, or add your own."];
+    Object.keys(F).forEach(function(k){ F[k].removeAttribute("aria-invalid"); });
+    if (bad){ if (bad[0].tagName==="INPUT") bad[0].setAttribute("aria-invalid","true"); rErr.textContent = bad[1]; bad[0].focus(); return false; }
+    rErr.textContent = ""; return true;
+  }
+  function showThanks(mode, href){
+    $("r-main").hidden = true; $("r-thanks").hidden = false;
+    var msg = $("r-thanks-msg");
+    if (mode === "sent") msg.textContent = "Your request was sent. A copy of your selections stays saved on this device.";
+    else if (href) msg.innerHTML = 'Your email app should open with your request addressed to <strong>'+esc(QUOTE_TO)+'</strong>. Just press Send. If it didn\'t open, <a id="r-mail-again" href="'+esc(href)+'">open it again</a> or use Copy summary and email it to us.';
+    else msg.textContent = "Email isn't set up on this board yet, so please use Copy summary and send it to us.";
+    reviewBd.querySelector(".modal").scrollTop = 0;
+    setTimeout(function(){ $("r-thanks-title").focus(); }, 30);
+  }
+  function openMail(href){ if (href && !window.__VB_NO_NAV) window.location.href = href; }
+  rForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    var c = readContact();
+    if (!validate(c)) return;
+    var href = buildMailto(c);
+    if (FORM_ENDPOINT){
+      var btn = $("r-submit"); btn.disabled = true; btn.textContent = "Sending…";
+      fetch(FORM_ENDPOINT, {method:"POST", headers:{"Content-Type":"application/json","Accept":"application/json"}, body:JSON.stringify(buildPayload(c))})
+        .then(function(r){ if (!r.ok) throw new Error("HTTP " + r.status); return r.json().catch(function(){return {};}); })
+        .then(function(j){ if (j && (j.success === false || j.success === "false")) throw new Error("not accepted"); showThanks("sent"); })
+        .catch(function(){ showThanks("mail", href); openMail(href); })
+        .then(function(){ btn.disabled = false; btn.textContent = "Request my custom quote"; });
+    } else {
+      showThanks("mail", href); openMail(href);
+    }
+  });
+
+  function copyText(text, statusEl){
+    function done(ok){ flash(statusEl, ok ? "Summary copied." : "Couldn't copy automatically. Select and copy the text instead."); }
+    function fallback(){
+      var ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.opacity="0";
+      reviewBd.appendChild(ta); ta.select(); var ok = false; try{ ok = document.execCommand("copy"); }catch(e){} reviewBd.removeChild(ta); done(ok);
+    }
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(function(){done(true);}, fallback);
+    else fallback();
+  }
+  $("r-copy").addEventListener("click", function(){ copyText(summaryText(), $("r-status")); });
+  $("r-copy2").addEventListener("click", function(){ copyText(summaryText(), $("r-status2")); });
+  var flashT;
+  function flash(el, msg){ if (!el) return; el.textContent = msg; clearTimeout(flashT); flashT = setTimeout(function(){ el.textContent = ""; }, 3500); }
+
+  /* ---------- Keyboard ---------- */
+  document.addEventListener("keydown", function(e){
+    if (!stack.length){
+      if (e.key==="/" && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)){ e.preventDefault(); qInput.focus(); }
+      return;
+    }
+    var top = stack[stack.length-1].bd;
+    if (e.key==="Escape"){ e.preventDefault(); closeDlg(top); return; }
+    var typing = /INPUT|TEXTAREA/.test(document.activeElement.tagName) && document.activeElement.type !== "checkbox";
+    if (top===backdrop && !typing){ if (e.key==="ArrowRight") step(1); if (e.key==="ArrowLeft") step(-1); }
+    if (e.key==="Tab"){
+      var f = Array.prototype.filter.call(top.querySelectorAll('button,[href],input,textarea,select,[tabindex]:not([tabindex="-1"])'), function(el){ return !el.disabled && el.offsetParent !== null; });
+      if (!f.length) return;
+      var first=f[0], last=f[f.length-1];
+      if (e.shiftKey && (document.activeElement===first || !top.contains(document.activeElement))){ e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (document.activeElement===last || !top.contains(document.activeElement))){ e.preventDefault(); first.focus(); }
+    }
+  });
+
+  renderFilters(); renderBoard(); updateBar();
+  window.__VB = {cards:CARDS.length, open:openModal, close:closeModal, plan:function(){return JSON.parse(JSON.stringify(plan));}, storeKey:STORE_KEY,
+    search:function(s){qInput.value=s;query=norm(s);renderBoard();return order.length;}, mailto:buildMailto, summary:summaryText, openReview:openReview};
+})();
+</script>
+</body>
+</html>
