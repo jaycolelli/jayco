@@ -80,13 +80,13 @@
   /* Modal */
   .backdrop{position:fixed;inset:0;background:rgba(20,30,22,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:50}
   .backdrop.show{opacity:1;pointer-events:auto}
-  .modal{background:var(--paper);border-radius:20px;width:min(920px,100%);max-height:calc(100vh - 40px);overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.3);transform:translateY(16px) scale(.98);transition:transform .3s ease}
+  .modal{background:var(--paper);border-radius:20px;width:min(920px,100%);max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px);overflow:auto;-webkit-overflow-scrolling:touch;box-shadow:0 30px 80px rgba(0,0,0,.3);transform:translateY(16px) scale(.98);transition:transform .3s ease}
   .backdrop.show .modal{transform:none}
   .m-head{position:sticky;top:0;background:var(--paper);display:flex;gap:14px;align-items:center;padding:20px 24px;border-bottom:1px solid var(--line);z-index:1}
   .m-head .ic{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:26px;background:var(--moss);flex:none}
   .m-head h2{margin:0;font-family:var(--serif);font-size:22px;line-height:1.2}
   .m-head .sub{margin:2px 0 0;color:var(--muted);font-size:14px}
-  .close{margin-left:auto;flex:none;font:inherit;font-size:22px;line-height:1;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:#fff;cursor:pointer;color:var(--ink)}
+  .close{margin-left:auto;flex:none;font:inherit;font-size:24px;line-height:1;width:44px;height:44px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;position:relative;z-index:2;border-radius:50%;border:1px solid var(--line);background:#fff;cursor:pointer;color:var(--ink)}
   .close:hover{background:var(--moss)}
   .close:focus-visible{outline:3px solid var(--clay);outline-offset:2px}
   .m-body{display:grid;grid-template-columns:1.6fr 1fr;gap:22px;padding:22px 24px 26px}
@@ -296,7 +296,7 @@
     <div class="m-head">
       <div class="ic" id="m-icon" aria-hidden="true"></div>
       <div><h2 id="m-title"></h2><p class="sub" id="m-sub"></p></div>
-      <button class="close" type="button" id="m-close" aria-label="Close preview">×</button>
+      <button class="close" type="button" id="m-close" data-close aria-label="Close preview">×</button>
     </div>
     <div class="m-body">
       <div>
@@ -1420,6 +1420,7 @@
     });
   }
   function closeModal(){ closeDlg(backdrop); }
+  $("m-close").addEventListener("click", function(e){ e.preventDefault(); e.stopPropagation(); closeModal(); });
   function step(dir){
     if (current===null || !order.length) return;
     var pos = order.indexOf(current); if (pos<0) pos = 0;
