@@ -52,6 +52,8 @@
   .chip{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:7px 14px;border-radius:999px;cursor:pointer;transition:all .2s}
   .chip:hover{border-color:var(--sage)}
   .chip[aria-pressed="true"]{background:var(--forest);color:#fff;border-color:var(--forest)}
+  .chip-own{border:2px dashed var(--sage);background:#fbfaf3;font-weight:600}
+  .chip-own:hover{border-color:var(--leaf);background:#f4f9f0}
   .chip:focus-visible{outline:3px solid var(--clay);outline-offset:2px}
   section.cat{margin-top:34px}
   .cat-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
@@ -1275,7 +1277,7 @@
     updateBar();
     if (isOpen(reviewBd)) renderReview();
   }
-  function updateBar(){
+  function updateBar(){ if (typeof renderFilters==="function" && filters) renderFilters();
     var n = plan.sel.length, m = plan.custom.length;
     $("pb-count").innerHTML = '<b>'+n+'</b> selected' + (m ? ' + <b>'+m+'</b> of your own' : '');
     $("pb-review").textContent = "Review my selections" + (n+m ? " (" + (n+m) + ")" : "");
@@ -1302,6 +1304,8 @@
       var n = CARDS.filter(function(x){return x.cat===c.id;}).length;
       html += '<button type="button" class="chip" data-cat="'+c.id+'" aria-pressed="'+(activeCat===c.id)+'">'+esc(c.name)+' ('+n+')</button>';
     });
+    var nOwn = plan.custom.length;
+    html += '<button type="button" class="chip chip-own" data-add-own-chip aria-haspopup="dialog">\u2795 Something else? Add your own'+(nOwn?' ('+nOwn+')':'')+'</button>';
     filters.innerHTML = html;
   }
   var ADD_OWN_CARD = '<button type="button" class="card add-own" data-add-own aria-haspopup="dialog"><span class="ic" aria-hidden="true">➕</span><h3>Something else? Add your own</h3><p>Don\'t see what you need? Describe it and we\'ll include it in your custom quote.</p><span class="open">Add an idea →</span></button>';
@@ -1348,6 +1352,7 @@
   });
   filters.addEventListener("click", function(e){
     var b = e.target.closest(".chip"); if(!b) return;
+    if (b.hasAttribute("data-add-own-chip")) { openCustom(b); return; }
     activeCat = b.dataset.cat; renderFilters(); renderBoard();
   });
   var t; qInput.addEventListener("input", function(){
