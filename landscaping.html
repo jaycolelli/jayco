@@ -13,8 +13,10 @@
      ============================================================ */
   var COMPANY_NAME  = "[Your Landscaping Co.]";   // e.g. "Green Valley Landscaping"
   var PRESENTER     = "[Your Business Name]";     // your consulting business name
+  var QUOTE_EMAIL   = "jayco.operations@outlook.com";     // where "Request my custom quote" emails go (or ?email=)
+  var FORM_ENDPOINT = "https://formsubmit.co/ajax/c7709bf6914b1ad29c1b7214dda07275";                         // optional: URL that accepts a JSON POST; leave "" to use email
   /* Tip: you can also override without editing, via the URL:
-     landscaping-vision-board.html?company=Green%20Valley%20Landscaping */
+     landscaping-vision-board.html?company=Green%20Valley%20Landscaping&email=quotes%40example.com */
 </script>
 <style>
   :root{
@@ -169,6 +171,73 @@
   .sms{background:#eef3ec;border-radius:14px 14px 14px 4px;padding:10px 12px;margin:6px 0 10px;max-width:92%}
   .sms.es{background:#f4efe3}
   @media (max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  /* v4: plan selection */
+  [hidden]{display:none!important}
+  body{padding-bottom:84px}
+  .card-wrap{position:relative;display:flex;opacity:0;transform:translateY(10px);animation:rise .5s ease forwards}
+  .card{flex:1;opacity:1;transform:none;animation:none;padding-top:20px}
+  .pick{position:absolute;top:16px;right:14px;z-index:2;display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--forest);background:#fff;border:1px solid var(--sage);border-radius:999px;padding:6px 11px 6px 8px;cursor:pointer;user-select:none;transition:background .2s,color .2s,border-color .2s,transform .25s}
+  .card-wrap:hover .pick{transform:translateY(-3px)}
+  .pick input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+  .pick .box{width:18px;height:18px;border-radius:5px;border:2px solid var(--leaf);display:grid;place-items:center;font-size:12px;line-height:1;color:transparent;background:#fff;transition:all .2s;flex:none}
+  .pick input:checked + .box{background:var(--leaf);color:#fff}
+  .pick input:focus-visible + .box{outline:3px solid var(--clay);outline-offset:2px}
+  .pick:hover{background:var(--moss)}
+  .card-wrap.selected .pick,.pick.on{background:var(--forest);border-color:var(--forest);color:#fff}
+  .card-wrap.selected .pick .box,.pick.on .box{border-color:#fff}
+  .card-wrap.selected .card{border-color:var(--leaf);box-shadow:inset 0 0 0 2px var(--leaf);background:#f4f9f0}
+  .pick.big{position:static;font-size:14px;padding:9px 14px 9px 10px;margin:0 0 14px}
+  .add-own{border:2px dashed var(--sage);background:#fbfaf3;align-items:flex-start;justify-content:center;min-height:180px}
+  .add-own .ic{margin-right:0;background:#fff}
+  .add-own:hover{border-color:var(--leaf);background:#f4f9f0}
+  .own-sec{margin-top:26px}
+  .own-sec h2{font-family:var(--serif);font-size:25px;margin:0 0 12px;color:var(--forest)}
+  .planbar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;background:rgba(31,52,36,.96);color:#f4f1e6;border-radius:16px;padding:10px 12px 10px 18px;box-shadow:0 12px 32px rgba(0,0,0,.25);width:max-content;max-width:calc(100% - 24px)}
+  .planbar .pb-count{font-size:14.5px;margin-right:4px}
+  .planbar .pb-count b{font-family:var(--serif);font-size:20px;color:#f3d9a4}
+  .planbar .tbtn{background:transparent;color:#f4f1e6;border-color:rgba(255,255,255,.35)}
+  .planbar .tbtn:hover{background:rgba(255,255,255,.12)}
+  .btn-primary{font:inherit;font-size:14.5px;font-weight:600;border:0;background:#f3d9a4;color:#24452c;border-radius:999px;padding:10px 18px;cursor:pointer;transition:transform .15s,background .2s}
+  .btn-primary:hover{background:#f7e4bd;transform:translateY(-1px)}
+  .btn-primary:focus-visible,.planbar .tbtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+  .btn-primary[disabled]{opacity:.6;cursor:wait}
+  .modal .btn-primary{background:var(--forest);color:#fff}
+  .modal .btn-primary:hover{background:#264d30}
+  .modal .btn-primary:focus-visible{outline:3px solid var(--clay)}
+  .modal.small{width:min(560px,100%)}
+  .form{padding:20px 24px 24px;display:grid;gap:14px}
+  .form label{display:block;font-size:14px;font-weight:600;color:var(--ink)}
+  .form label input,.form label textarea{display:block;margin-top:6px}
+  .form .opt{font-weight:400;color:var(--muted)}
+  .form input,.form textarea{font:inherit;font-weight:400;font-size:15px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);width:100%}
+  .form textarea{resize:vertical;min-height:80px}
+  .form input:focus,.form textarea:focus{outline:none;border-color:var(--leaf);box-shadow:0 0 0 3px rgba(79,138,75,.2)}
+  .form input[aria-invalid="true"]{border-color:var(--clay)}
+  .err{color:#9a4b22;font-size:13.5px;margin:0;min-height:1em}
+  .form-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;align-items:center}
+  .r-body{display:grid;grid-template-columns:1.1fr 1fr;gap:4px}
+  @media (max-width:760px){.r-body{grid-template-columns:1fr}}
+  .r-list-wrap{padding:20px 24px;border-right:1px solid var(--line)}
+  @media (max-width:760px){.r-list-wrap{border-right:0;border-bottom:1px solid var(--line)}}
+  .r-group{margin:0 0 14px}
+  .r-group h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--forest);margin:0 0 6px}
+  .r-item{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;margin-bottom:6px;font-size:14.5px}
+  .r-item .ri-ic{flex:none}
+  .r-item .ri-t{flex:1}
+  .r-item .ri-t small{display:block;color:var(--muted);font-size:13px;white-space:pre-wrap}
+  .r-item button{flex:none;font:inherit;font-size:12.5px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px;cursor:pointer;color:#9a4b22}
+  .r-item button:hover{background:#fbe6d6}
+  .r-item button:focus-visible{outline:3px solid var(--clay);outline-offset:2px}
+  .r-empty{color:var(--muted);font-size:14.5px;background:#fbfaf3;border:1px dashed var(--line);border-radius:10px;padding:14px}
+  .r-note{font-size:12.5px;color:var(--muted);margin:0}
+  .thanks{padding:36px 28px 32px;text-align:center}
+  .thanks .big-ck{font-size:44px;line-height:1}
+  .thanks h3{font-family:var(--serif);font-size:24px;margin:10px 0 8px;color:var(--forest)}
+  .thanks p{color:var(--muted);max-width:520px;margin:0 auto 12px}
+  .thanks .form-actions{justify-content:center;margin-top:16px}
+  .status{font-size:13px;color:var(--leaf);min-height:1em}
+  @media (max-width:560px){.planbar{left:12px;right:12px;transform:none;width:auto}.card h3{margin-top:30px}}
+  @media print{.card-wrap{opacity:1;transform:none;animation:none}.planbar,.pick{display:none}}
 </style>
 </head>
 <body>
@@ -185,7 +254,7 @@
       <span class="stat"><b>1</b>owner in control</span>
     </div>
     <div class="hero-row">
-      <span class="hint">Click any card to see a sample of what it would produce.</span>
+      <span class="hint">Click a card to preview it. Tick <strong>Add to my plan</strong> on anything you want, then review your selections to request a custom quote.</span>
     </div>
   </div>
   <svg class="hills" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
@@ -209,7 +278,7 @@
   </div>
   <div class="filters" role="group" aria-label="Filter by category" id="filters"></div>
   <div id="board"></div>
-  <div class="empty" id="empty">No ideas match that search. Try "email", "crew", or "weather".</div>
+  <div class="empty" id="empty">No ideas match that search. Try "email", "crew", or "weather", or <button type="button" class="tbtn" id="empty-add">add your own idea</button>.</div>
 
   <p class="est-note">⏱ "Est. time saved" tags are rough, illustrative estimates for discussion only, not promises or measured results. Actual results depend on your volume and workflow. Anything touching legal, tax, visa, licensing, or insurance is a general reminder or research summary, not professional advice.</p>
 </main>
@@ -233,6 +302,7 @@
         <div class="doc" id="m-doc"></div>
       </div>
       <div class="side">
+        <label class="pick big" id="m-pick-label"><input type="checkbox" id="m-pick"><span class="box" aria-hidden="true">✓</span><span id="m-pick-txt">Add to my plan</span></label>
         <p class="label">How it works</p>
         <ul id="m-how"></ul>
         <span class="tag" id="m-tag"></span>
@@ -245,6 +315,88 @@
       <button type="button" id="m-next">Next →</button>
     </div>
     <p class="m-foot">Examples use sample data for illustration. Names, customers, and figures are fictional.</p>
+  </div>
+</div>
+<div class="planbar" id="planbar" role="region" aria-label="My plan">
+  <span class="pb-count" id="pb-count" aria-live="polite"><b>0</b> selected</span>
+  <button type="button" class="tbtn" id="pb-add">+ Add your own</button>
+  <button type="button" class="btn-primary" id="pb-review">Review my selections</button>
+</div>
+
+<div class="backdrop" id="custom-bd" aria-hidden="true">
+  <div class="modal small" role="dialog" aria-modal="true" aria-labelledby="c-title" tabindex="-1">
+    <div class="m-head">
+      <div class="ic" aria-hidden="true">➕</div>
+      <div><h2 id="c-title">Something else? Add your own</h2><p class="sub">Describe anything you'd like help with that isn't on the board. It will be added to your plan.</p></div>
+      <button class="close" type="button" data-close aria-label="Close">×</button>
+    </div>
+    <form class="form" id="custom-form" novalidate>
+      <label for="c-name">What do you need?
+        <input id="c-name" type="text" maxlength="90" placeholder="e.g. Track irrigation warranty claims" autocomplete="off">
+      </label>
+      <label for="c-desc">Tell us a bit more <span class="opt">(optional)</span>
+        <textarea id="c-desc" rows="4" maxlength="800" placeholder="What happens today, what you'd like it to do, any tools you use…"></textarea>
+      </label>
+      <p class="err" id="c-err" role="alert"></p>
+      <div class="form-actions">
+        <button type="button" class="tbtn" data-close>Cancel</button>
+        <button type="submit" class="btn-primary">Add to my plan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="backdrop" id="review-bd" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="r-title" tabindex="-1">
+    <div class="m-head">
+      <div class="ic" aria-hidden="true">📋</div>
+      <div><h2 id="r-title">Review my selections</h2><p class="sub">Check your list, add anything we missed, and we'll email you a finalized quote.</p></div>
+      <button class="close" type="button" data-close aria-label="Close review">×</button>
+    </div>
+    <div id="r-main" class="r-body">
+      <div class="r-list-wrap">
+        <p class="label">Your plan · <span id="r-count">0 items</span></p>
+        <div id="r-list" tabindex="-1"></div>
+        <button type="button" class="tbtn" id="r-add">+ Add your own</button>
+      </div>
+      <form class="form" id="r-form" novalidate>
+        <p class="label" style="margin:0">Your contact info</p>
+        <label for="f-name">Your name
+          <input id="f-name" type="text" autocomplete="name" maxlength="90" required>
+        </label>
+        <label for="f-biz">Business name
+          <input id="f-biz" type="text" autocomplete="organization" maxlength="120" required>
+        </label>
+        <label for="f-email">Email
+          <input id="f-email" type="email" autocomplete="email" maxlength="120" required>
+        </label>
+        <label for="f-phone">Phone <span class="opt">(optional)</span>
+          <input id="f-phone" type="tel" autocomplete="tel" maxlength="40">
+        </label>
+        <label for="f-notes">Notes <span class="opt">(optional)</span>
+          <textarea id="f-notes" rows="3" maxlength="1500" placeholder="Timing, priorities, tools you already use…"></textarea>
+        </label>
+        <p class="err" id="r-err" role="alert"></p>
+        <div class="form-actions">
+          <span class="status" id="r-status" aria-live="polite"></span>
+          <button type="button" class="tbtn" id="r-copy">Copy summary</button>
+          <button type="submit" class="btn-primary" id="r-submit">Request my custom quote</button>
+        </div>
+        <p class="r-note" id="r-how"></p>
+      </form>
+    </div>
+    <div id="r-thanks" class="thanks" hidden>
+      <div class="big-ck" aria-hidden="true">✅</div>
+      <h3 id="r-thanks-title" tabindex="-1">Thanks! We'll review your selections and email you a finalized quote.</h3>
+      <p id="r-thanks-msg"></p>
+      <div class="form-actions">
+        <span class="status" id="r-status2" aria-live="polite"></span>
+        <button type="button" class="tbtn" id="r-copy2">Copy summary</button>
+        <button type="button" class="tbtn" id="r-edit">Edit my selections</button>
+        <button type="button" class="btn-primary" data-close>Back to the board</button>
+      </div>
+    </div>
+    <p class="m-foot">Examples use sample data for illustration. Your selections are saved on this device only.</p>
   </div>
 </div>
 <script>
@@ -1074,7 +1226,62 @@
   var qInput = document.getElementById("q"), countEl = document.getElementById("count"), emptyEl = document.getElementById("empty");
   var activeCat = "all", query = "", order = [], collapsed = {};
   var catName = function(id){for(var i=0;i<CATS.length;i++) if(CATS[i].id===id) return CATS[i].name; return "";};
+  function $(id){return document.getElementById(id);}
 
+  /* ---------- Plan state (saved in localStorage, keyed by company) ---------- */
+  var QUOTE_TO = String(qs.get("email") || QUOTE_EMAIL || "").trim();
+  var EMAIL_RE = /^[^\s@<>()]+@[^\s@<>()]+\.[^\s@<>()]+$/;
+  var STORE_KEY = "vb-plan:" + COMPANY_NAME;
+  function slug(s){return String(s).toLowerCase().replace(/&/g,"and").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");}
+  var BY_ID = {};
+  CARDS.forEach(function(c, i){ c.id = c.cat + "--" + slug(val(c.title)); c.idx = i; BY_ID[c.id] = c; });
+  function emptyPlan(){return {sel:[], custom:[], contact:{}};}
+  function loadPlan(){
+    try{
+      var p = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+      if (!p || typeof p !== "object") return emptyPlan();
+      return {
+        sel: Array.isArray(p.sel) ? p.sel.filter(function(id){return !!BY_ID[id];}) : [],
+        custom: Array.isArray(p.custom) ? p.custom.filter(function(c){return c && c.title;}).map(function(c){return {id:String(c.id||("c"+Date.now())), title:String(c.title).slice(0,90), desc:String(c.desc||"").slice(0,800)};}) : [],
+        contact: (p.contact && typeof p.contact === "object") ? p.contact : {}
+      };
+    }catch(e){ return emptyPlan(); }
+  }
+  var plan = loadPlan();
+  function savePlan(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(plan)); }catch(e){} }
+  function isSel(id){ return plan.sel.indexOf(id) > -1; }
+  function setSel(id, on){
+    var has = isSel(id);
+    if (on && !has) plan.sel.push(id);
+    if (!on && has) plan.sel.splice(plan.sel.indexOf(id), 1);
+    savePlan(); syncSel(id);
+  }
+  function addCustom(title, desc){
+    var item = {id:"c" + Date.now().toString(36) + Math.random().toString(36).slice(2,6), title:title, desc:desc||""};
+    plan.custom.push(item); savePlan(); updateBar(); if (isOpen(reviewBd)) renderReview();
+    return item;
+  }
+  function removeCustom(id){
+    plan.custom = plan.custom.filter(function(c){return c.id !== id;});
+    savePlan(); updateBar(); if (isOpen(reviewBd)) renderReview();
+  }
+  function totalCount(){ return plan.sel.length + plan.custom.length; }
+
+  function syncSel(id){
+    var on = isSel(id);
+    var w = board.querySelector('.card-wrap[data-id="'+id+'"]');
+    if (w){ w.classList.toggle("selected", on); var cb = w.querySelector("input[data-pick]"); cb.checked = on; w.querySelector(".pick-txt").textContent = on ? "In my plan" : "Add to my plan"; }
+    if (current !== null && CARDS[current].id === id) syncModalPick();
+    updateBar();
+    if (isOpen(reviewBd)) renderReview();
+  }
+  function updateBar(){
+    var n = plan.sel.length, m = plan.custom.length;
+    $("pb-count").innerHTML = '<b>'+n+'</b> selected' + (m ? ' + <b>'+m+'</b> of your own' : '');
+    $("pb-review").textContent = "Review my selections" + (n+m ? " (" + (n+m) + ")" : "");
+  }
+
+  /* ---------- Board ---------- */
   function norm(s){return String(s).toLowerCase();}
   function matches(card){
     if (!query) return true;
@@ -1089,7 +1296,6 @@
     });
     return t;
   }
-
   function renderFilters(){
     var html = '<button type="button" class="chip" data-cat="all" aria-pressed="'+(activeCat==="all")+'">All ('+CARDS.length+')</button>';
     CATS.forEach(function(c){
@@ -1098,7 +1304,7 @@
     });
     filters.innerHTML = html;
   }
-
+  var ADD_OWN_CARD = '<button type="button" class="card add-own" data-add-own aria-haspopup="dialog"><span class="ic" aria-hidden="true">➕</span><h3>Something else? Add your own</h3><p>Don\'t see what you need? Describe it and we\'ll include it in your custom quote.</p><span class="open">Add an idea →</span></button>';
   function renderBoard(){
     var html = "", delay = 0, shown = 0; order = [];
     CATS.forEach(function(c){
@@ -1109,14 +1315,18 @@
       var open = query ? true : !collapsed[c.id];
       html += '<details class="cat" data-cat="'+c.id+'"'+(open?' open':'')+'><summary><h2>'+esc(c.name)+'</h2><span class="cnt">'+items.length+(query?' match'+(items.length>1?'es':''):' ideas')+'</span><p>'+esc(c.blurb)+'</p><span class="chev" aria-hidden="true">▾</span></summary><div class="grid">';
       items.forEach(function(i){
-        var card = CARDS[i]; order.push(i); shown++;
-        html += '<button type="button" class="card" data-i="'+i+'" style="animation-delay:'+Math.min(delay++*25,600)+'ms" aria-haspopup="dialog">'+
+        var card = CARDS[i], on = isSel(card.id), t = val(card.title); order.push(i); shown++;
+        html += '<div class="card-wrap'+(on?' selected':'')+'" data-id="'+card.id+'" style="animation-delay:'+Math.min(delay++*25,600)+'ms">'+
+          '<button type="button" class="card" data-i="'+i+'" aria-haspopup="dialog" aria-label="Preview: '+esc(t)+'">'+
           '<span class="ic" aria-hidden="true">'+val(card.icon)+'</span>'+
-          '<h3>'+hl(val(card.title))+'</h3><p>'+hl(val(card.benefit))+'</p>'+
-          '<span class="foot"><span class="tag">⏱ Est. '+esc(card.tag)+' saved (illustrative)</span><span class="open">Preview →</span></span></button>';
+          '<h3>'+hl(t)+'</h3><p>'+hl(val(card.benefit))+'</p>'+
+          '<span class="foot"><span class="tag">⏱ Est. '+esc(card.tag)+' saved (illustrative)</span><span class="open">Preview →</span></span></button>'+
+          '<label class="pick"><input type="checkbox" data-pick="'+card.id+'"'+(on?' checked':'')+' aria-label="Add to my plan: '+esc(t)+'"><span class="box" aria-hidden="true">✓</span><span class="pick-txt">'+(on?'In my plan':'Add to my plan')+'</span></label>'+
+          '</div>';
       });
       html += '</div></details>';
     });
+    html += '<section class="own-sec" aria-labelledby="own-h"><h2 id="own-h">Something else?</h2><div class="grid">'+ADD_OWN_CARD+'</div></section>';
     board.innerHTML = html;
     countEl.innerHTML = 'Showing <b>'+shown+'</b> of <b>'+CARDS.length+'</b> ideas';
     emptyEl.classList.toggle("show", shown===0);
@@ -1126,6 +1336,16 @@
     var d = e.target; if (!d.matches || !d.matches("details.cat") || query) return;
     collapsed[d.dataset.cat] = !d.open;
   }, true);
+  board.addEventListener("change", function(e){
+    var cb = e.target; if (!cb.matches("input[data-pick]")) return;
+    setSel(cb.getAttribute("data-pick"), cb.checked);
+  });
+  board.addEventListener("click", function(e){
+    if (e.target.closest(".pick")) return;
+    if (e.target.closest("[data-add-own]")) { openCustom(e.target.closest("[data-add-own]")); return; }
+    var c = e.target.closest(".card"); if(!c) return;
+    openModal(+c.dataset.i, c);
+  });
   filters.addEventListener("click", function(e){
     var b = e.target.closest(".chip"); if(!b) return;
     activeCat = b.dataset.cat; renderFilters(); renderBoard();
@@ -1134,74 +1354,271 @@
     clearTimeout(t); t = setTimeout(function(){ query = norm(qInput.value.trim()); renderBoard(); }, 120);
   });
   qInput.addEventListener("keydown", function(e){ if (e.key==="Escape" && qInput.value){ qInput.value=""; query=""; renderBoard(); } });
-  document.getElementById("expand-all").addEventListener("click", function(){ collapsed = {}; renderBoard(); });
-  document.getElementById("collapse-all").addEventListener("click", function(){ CATS.forEach(function(c){collapsed[c.id]=true;}); if(query){qInput.value="";query="";} renderBoard(); });
-  board.addEventListener("click", function(e){
-    var c = e.target.closest(".card"); if(!c) return;
-    openModal(+c.dataset.i, c);
+  $("expand-all").addEventListener("click", function(){ collapsed = {}; renderBoard(); });
+  $("collapse-all").addEventListener("click", function(){ CATS.forEach(function(c){collapsed[c.id]=true;}); if(query){qInput.value="";query="";} renderBoard(); });
+  $("empty-add").addEventListener("click", function(e){ openCustom(e.currentTarget); });
+
+  /* ---------- Dialog manager (stack: Esc closes the top one, Tab stays inside) ---------- */
+  var backdrop = $("backdrop"), modal = $("modal"), customBd = $("custom-bd"), reviewBd = $("review-bd");
+  var stack = [];
+  function isOpen(bd){ return bd.classList.contains("show"); }
+  function openDlg(bd, focusEl, onClose){
+    if (isOpen(bd)) { if (focusEl) focusEl.focus(); return; }
+    bd.classList.add("show"); bd.setAttribute("aria-hidden","false");
+    stack.push({bd:bd, onClose:onClose, opener:document.activeElement});
+    document.body.style.overflow = "hidden";
+    var dlg = bd.querySelector(".modal"); dlg.scrollTop = 0;
+    setTimeout(function(){ (focusEl || dlg).focus(); }, 30);
+  }
+  function closeDlg(bd){
+    var k = -1; for (var i=stack.length-1;i>=0;i--) if (stack[i].bd===bd){k=i;break;}
+    if (k<0) return;
+    var item = stack.splice(k,1)[0];
+    bd.classList.remove("show"); bd.setAttribute("aria-hidden","true");
+    if (!stack.length) document.body.style.overflow = "";
+    var target = item.onClose ? item.onClose() : null;
+    target = target || item.opener;
+    if (target && document.body.contains(target)) { var d = target.closest && target.closest("details"); if (d && !d.open) d.open = true; target.focus(); }
+  }
+  [backdrop, customBd, reviewBd].forEach(function(bd){
+    bd.addEventListener("click", function(e){ if (e.target===bd || e.target.closest("[data-close]")) closeDlg(bd); });
   });
 
-  /* ---------- Modal ---------- */
-  var backdrop = document.getElementById("backdrop"), modal = document.getElementById("modal");
-  var current = null, lastFocus = null;
-
+  /* ---------- Preview modal ---------- */
+  var current = null;
+  var mPick = $("m-pick");
+  function syncModalPick(){
+    var on = current !== null && isSel(CARDS[current].id);
+    mPick.checked = on;
+    $("m-pick-label").classList.toggle("on", on);
+    $("m-pick-txt").textContent = on ? "In my plan" : "Add to my plan";
+  }
+  mPick.addEventListener("change", function(){ if (current!==null) setSel(CARDS[current].id, mPick.checked); });
   function fillModal(i){
     var c = CARDS[i];
-    document.getElementById("m-icon").textContent = val(c.icon);
-    document.getElementById("m-title").textContent = val(c.title);
-    document.getElementById("m-sub").textContent = catName(c.cat) + " · " + val(c.benefit);
-    document.getElementById("m-doc").innerHTML = c.doc();
-    document.getElementById("m-how").innerHTML = val(c.how).map(function(h){return "<li>"+esc(h)+"</li>";}).join("");
-    document.getElementById("m-tag").textContent = "⏱ Est. " + c.tag + " saved (illustrative estimate)";
+    $("m-icon").textContent = val(c.icon);
+    $("m-title").textContent = val(c.title);
+    $("m-sub").textContent = catName(c.cat) + " · " + val(c.benefit);
+    $("m-doc").innerHTML = c.doc();
+    $("m-how").innerHTML = val(c.how).map(function(h){return "<li>"+esc(h)+"</li>";}).join("");
+    $("m-tag").textContent = "⏱ Est. " + c.tag + " saved (illustrative estimate)";
+    mPick.setAttribute("aria-label", "Add to my plan: " + val(c.title));
     var pos = order.indexOf(i);
-    document.getElementById("m-pos").textContent = pos > -1 ? (pos+1) + " of " + order.length : "";
+    $("m-pos").textContent = pos > -1 ? (pos+1) + " of " + order.length : "";
+    syncModalPick();
   }
-  function openModal(i, from){
-    current = i; lastFocus = from || document.activeElement;
-    fillModal(i);
-    backdrop.classList.add("show"); backdrop.setAttribute("aria-hidden","false");
-    document.body.style.overflow = "hidden";
-    modal.scrollTop = 0;
-    setTimeout(function(){document.getElementById("m-close").focus();}, 30);
+  function openModal(i){
+    current = i; fillModal(i);
+    openDlg(backdrop, $("m-close"), function(){
+      var idx = current; current = null;
+      return board.querySelector('.card[data-i="'+idx+'"]');
+    });
   }
-  function closeModal(){
-    if (current===null) return;
-    var idx = current;
-    backdrop.classList.remove("show"); backdrop.setAttribute("aria-hidden","true");
-    document.body.style.overflow = "";
-    current = null;
-    var target = board.querySelector('.card[data-i="'+idx+'"]') || (lastFocus && document.body.contains(lastFocus) ? lastFocus : null);
-    if (target) { var d = target.closest("details"); if (d && !d.open) d.open = true; target.focus(); }
-  }
+  function closeModal(){ closeDlg(backdrop); }
   function step(dir){
     if (current===null || !order.length) return;
     var pos = order.indexOf(current); if (pos<0) pos = 0;
     current = order[(pos + dir + order.length) % order.length];
     fillModal(current); modal.scrollTop = 0;
   }
-  document.getElementById("m-close").addEventListener("click", closeModal);
-  document.getElementById("m-prev").addEventListener("click", function(){step(-1);});
-  document.getElementById("m-next").addEventListener("click", function(){step(1);});
-  backdrop.addEventListener("click", function(e){ if (e.target===backdrop) closeModal(); });
+  $("m-prev").addEventListener("click", function(){step(-1);});
+  $("m-next").addEventListener("click", function(){step(1);});
 
-  document.addEventListener("keydown", function(e){
-    if (current===null){
-      if (e.key==="/" && document.activeElement!==qInput){ e.preventDefault(); qInput.focus(); }
-      return;
+  /* ---------- "Add your own" form ---------- */
+  var cForm = $("custom-form"), cName = $("c-name"), cDesc = $("c-desc"), cErr = $("c-err");
+  function openCustom(){
+    cForm.reset(); cErr.textContent = ""; cName.removeAttribute("aria-invalid");
+    openDlg(customBd, cName);
+  }
+  cForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    var title = cName.value.trim(), desc = cDesc.value.trim();
+    if (!title){ cErr.textContent = "Please give your idea a short title."; cName.setAttribute("aria-invalid","true"); cName.focus(); return; }
+    addCustom(title, desc);
+    closeDlg(customBd);
+    flash((isOpen(reviewBd) ? $("r-status") : null), "Added “" + title + "” to your plan.");
+  });
+
+  /* ---------- Review & request ---------- */
+  var rForm = $("r-form"), rList = $("r-list"), rErr = $("r-err");
+  var F = {name:$("f-name"), biz:$("f-biz"), email:$("f-email"), phone:$("f-phone"), notes:$("f-notes")};
+  var DEFAULT_BIZ = /^\s*\[.*\]\s*$/.test(COMPANY_NAME) ? "" : COMPANY_NAME;
+  function fillContact(){
+    var c = plan.contact || {};
+    F.name.value = c.name || ""; F.biz.value = c.biz || DEFAULT_BIZ; F.email.value = c.email || ""; F.phone.value = c.phone || ""; F.notes.value = c.notes || "";
+  }
+  function readContact(){
+    var c = {name:F.name.value.trim(), biz:F.biz.value.trim(), email:F.email.value.trim(), phone:F.phone.value.trim(), notes:F.notes.value.trim()};
+    plan.contact = c; savePlan(); return c;
+  }
+  Object.keys(F).forEach(function(k){ F[k].addEventListener("input", function(){ readContact(); F[k].removeAttribute("aria-invalid"); }); });
+
+  function grouped(){
+    return CATS.map(function(cat){
+      return {cat:cat, items:CARDS.filter(function(c){return c.cat===cat.id && isSel(c.id);})};
+    }).filter(function(g){return g.items.length;});
+  }
+  function renderReview(){
+    var n = totalCount(), html = "";
+    $("r-count").textContent = n + (n===1 ? " item" : " items");
+    if (!n) html = '<p class="r-empty">Nothing selected yet. Close this window and tick <strong>Add to my plan</strong> on any card, or add your own idea below.</p>';
+    grouped().forEach(function(g){
+      html += '<div class="r-group"><h3>'+esc(g.cat.name)+' ('+g.items.length+')</h3>';
+      g.items.forEach(function(c){
+        html += '<div class="r-item"><span class="ri-ic" aria-hidden="true">'+val(c.icon)+'</span><span class="ri-t">'+esc(val(c.title))+'</span><button type="button" data-remove-card="'+c.id+'" aria-label="Remove '+esc(val(c.title))+'">Remove</button></div>';
+      });
+      html += '</div>';
+    });
+    if (plan.custom.length){
+      html += '<div class="r-group"><h3>Your own requests ('+plan.custom.length+')</h3>';
+      plan.custom.forEach(function(c){
+        html += '<div class="r-item"><span class="ri-ic" aria-hidden="true">✍️</span><span class="ri-t">'+esc(c.title)+(c.desc?'<small>'+esc(c.desc)+'</small>':'')+'</span><button type="button" data-remove-custom="'+esc(c.id)+'" aria-label="Remove '+esc(c.title)+'">Remove</button></div>';
+      });
+      html += '</div>';
     }
-    if (e.key==="Escape"){ e.preventDefault(); closeModal(); return; }
-    if (e.key==="ArrowRight") step(1);
-    if (e.key==="ArrowLeft") step(-1);
-    if (e.key==="Tab"){
-      var f = modal.querySelectorAll('button,[href],[tabindex]:not([tabindex="-1"])');
-      var first=f[0], last=f[f.length-1];
-      if (e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+    rList.innerHTML = html;
+    $("r-how").textContent = FORM_ENDPOINT
+      ? "Your request is sent securely to " + (PRESENTER || "us") + ". You'll get a finalized quote by email."
+      : (EMAIL_RE.test(QUOTE_TO) ? "This opens your email app with your request addressed to " + QUOTE_TO + ". Nothing is sent until you press Send. You'll get a finalized quote by email." : "Email delivery isn't set up yet. Use Copy summary and send it to us.");
+  }
+  rList.addEventListener("click", function(e){
+    var b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.removeCard) setSel(b.dataset.removeCard, false);
+    else if (b.dataset.removeCustom) removeCustom(b.dataset.removeCustom);
+    else return;
+    renderReview(); rList.focus();
+    flash($("r-status"), "Removed.");
+  });
+  $("r-add").addEventListener("click", function(){ openCustom(); });
+  $("pb-add").addEventListener("click", function(){ openCustom(); });
+  $("pb-review").addEventListener("click", function(){ openReview(); });
+  $("r-edit").addEventListener("click", function(){ showForm(); });
+
+  function showForm(){ $("r-main").hidden = false; $("r-thanks").hidden = true; setTimeout(function(){ F.name.focus(); }, 30); }
+  function openReview(){
+    fillContact(); renderReview(); rErr.textContent = "";
+    $("r-main").hidden = false; $("r-thanks").hidden = true;
+    var submit = $("r-submit"); submit.disabled = false; submit.textContent = "Request my custom quote";
+    openDlg(reviewBd, totalCount() ? F.name : $("r-add"));
+  }
+
+  function summaryText(c){
+    c = c || readContact();
+    var L2 = [];
+    L2.push("Grok Bot plan request - " + (c.biz || "(business not given)"));
+    L2.push("");
+    L2.push("CONTACT");
+    L2.push("Name: " + (c.name || "-"));
+    L2.push("Business: " + (c.biz || "-"));
+    L2.push("Email: " + (c.email || "-"));
+    L2.push("Phone: " + (c.phone || "not provided"));
+    L2.push("");
+    L2.push("SELECTED IDEAS (" + plan.sel.length + ")");
+    var g = grouped();
+    if (!g.length) L2.push("  (none)");
+    g.forEach(function(x){
+      L2.push(x.cat.name + ":");
+      x.items.forEach(function(it){ L2.push("  - " + val(it.title)); });
+    });
+    L2.push("");
+    L2.push("CUSTOM REQUESTS (" + plan.custom.length + ")");
+    if (!plan.custom.length) L2.push("  (none)");
+    plan.custom.forEach(function(it){ L2.push("  - " + it.title + (it.desc ? ": " + it.desc.replace(/\s*\n\s*/g," ") : "")); });
+    L2.push("");
+    L2.push("NOTES");
+    L2.push(c.notes || "(none)");
+    L2.push("");
+    L2.push("Sent from the AI team vision board for " + COMPANY_NAME + ".");
+    return L2.join("\n");
+  }
+  function subjectLine(c){ return "Grok Bot plan request - " + ((c && c.biz) || COMPANY_NAME); }
+  function buildMailto(c){
+    c = c || readContact();
+    if (!EMAIL_RE.test(QUOTE_TO)) return "";
+    var body = summaryText(c).replace(/\r?\n/g, "\r\n");
+    return "mailto:" + encodeURIComponent(QUOTE_TO).replace(/%40/g,"@") + "?subject=" + encodeURIComponent(subjectLine(c)) + "&body=" + encodeURIComponent(body);
+  }
+  function buildPayload(c){
+    // Flat fields so form services (e.g. FormSubmit) render them cleanly in the email
+    return {
+      _subject: subjectLine(c), _replyto: c.email, _template: "box", _captcha: "false",
+      "Name": c.name, "Business": c.biz, "Email": c.email, "Phone": c.phone || "",
+      "Notes": c.notes || "", "Selections": summaryText(c),
+      "Selected count": String(totalCount()), "Board": COMPANY_NAME, "Submitted": new Date().toLocaleString()
+    };
+  }
+  function validate(c){
+    var bad = null;
+    [["name","Please add your name."],["biz","Please add your business name."]].forEach(function(p){ if (!bad && !c[p[0]]) bad = [F[p[0]], p[1]]; });
+    if (!bad && !EMAIL_RE.test(c.email)) bad = [F.email, "Please enter a valid email so we can send your quote."];
+    if (!bad && !totalCount()) bad = [$("r-add"), "Pick at least one idea, or add your own."];
+    Object.keys(F).forEach(function(k){ F[k].removeAttribute("aria-invalid"); });
+    if (bad){ if (bad[0].tagName==="INPUT") bad[0].setAttribute("aria-invalid","true"); rErr.textContent = bad[1]; bad[0].focus(); return false; }
+    rErr.textContent = ""; return true;
+  }
+  function showThanks(mode, href){
+    $("r-main").hidden = true; $("r-thanks").hidden = false;
+    var msg = $("r-thanks-msg");
+    if (mode === "sent") msg.textContent = "Your request was sent. A copy of your selections stays saved on this device.";
+    else if (href) msg.innerHTML = 'Your email app should open with your request addressed to <strong>'+esc(QUOTE_TO)+'</strong>. Just press Send. If it didn\'t open, <a id="r-mail-again" href="'+esc(href)+'">open it again</a> or use Copy summary and email it to us.';
+    else msg.textContent = "Email isn't set up on this board yet, so please use Copy summary and send it to us.";
+    reviewBd.querySelector(".modal").scrollTop = 0;
+    setTimeout(function(){ $("r-thanks-title").focus(); }, 30);
+  }
+  function openMail(href){ if (href && !window.__VB_NO_NAV) window.location.href = href; }
+  rForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    var c = readContact();
+    if (!validate(c)) return;
+    var href = buildMailto(c);
+    if (FORM_ENDPOINT){
+      var btn = $("r-submit"); btn.disabled = true; btn.textContent = "Sending…";
+      fetch(FORM_ENDPOINT, {method:"POST", headers:{"Content-Type":"application/json","Accept":"application/json"}, body:JSON.stringify(buildPayload(c))})
+        .then(function(r){ if (!r.ok) throw new Error("HTTP " + r.status); return r.json().catch(function(){return {};}); })
+        .then(function(j){ if (j && (j.success === false || j.success === "false")) throw new Error("not accepted"); showThanks("sent"); })
+        .catch(function(){ showThanks("mail", href); openMail(href); })
+        .then(function(){ btn.disabled = false; btn.textContent = "Request my custom quote"; });
+    } else {
+      showThanks("mail", href); openMail(href);
     }
   });
 
-  renderFilters(); renderBoard();
-  window.__VB = {cards:CARDS.length, open:openModal, close:closeModal, search:function(s){qInput.value=s;query=norm(s);renderBoard();return order.length;}};
+  function copyText(text, statusEl){
+    function done(ok){ flash(statusEl, ok ? "Summary copied." : "Couldn't copy automatically. Select and copy the text instead."); }
+    function fallback(){
+      var ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.opacity="0";
+      reviewBd.appendChild(ta); ta.select(); var ok = false; try{ ok = document.execCommand("copy"); }catch(e){} reviewBd.removeChild(ta); done(ok);
+    }
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(function(){done(true);}, fallback);
+    else fallback();
+  }
+  $("r-copy").addEventListener("click", function(){ copyText(summaryText(), $("r-status")); });
+  $("r-copy2").addEventListener("click", function(){ copyText(summaryText(), $("r-status2")); });
+  var flashT;
+  function flash(el, msg){ if (!el) return; el.textContent = msg; clearTimeout(flashT); flashT = setTimeout(function(){ el.textContent = ""; }, 3500); }
+
+  /* ---------- Keyboard ---------- */
+  document.addEventListener("keydown", function(e){
+    if (!stack.length){
+      if (e.key==="/" && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)){ e.preventDefault(); qInput.focus(); }
+      return;
+    }
+    var top = stack[stack.length-1].bd;
+    if (e.key==="Escape"){ e.preventDefault(); closeDlg(top); return; }
+    var typing = /INPUT|TEXTAREA/.test(document.activeElement.tagName) && document.activeElement.type !== "checkbox";
+    if (top===backdrop && !typing){ if (e.key==="ArrowRight") step(1); if (e.key==="ArrowLeft") step(-1); }
+    if (e.key==="Tab"){
+      var f = Array.prototype.filter.call(top.querySelectorAll('button,[href],input,textarea,select,[tabindex]:not([tabindex="-1"])'), function(el){ return !el.disabled && el.offsetParent !== null; });
+      if (!f.length) return;
+      var first=f[0], last=f[f.length-1];
+      if (e.shiftKey && (document.activeElement===first || !top.contains(document.activeElement))){ e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (document.activeElement===last || !top.contains(document.activeElement))){ e.preventDefault(); first.focus(); }
+    }
+  });
+
+  renderFilters(); renderBoard(); updateBar();
+  window.__VB = {cards:CARDS.length, open:openModal, close:closeModal, plan:function(){return JSON.parse(JSON.stringify(plan));}, storeKey:STORE_KEY,
+    search:function(s){qInput.value=s;query=norm(s);renderBoard();return order.length;}, mailto:buildMailto, summary:summaryText, openReview:openReview};
 })();
 </script>
 </body>
